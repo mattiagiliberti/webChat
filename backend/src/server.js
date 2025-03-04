@@ -4,6 +4,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("../utils/db");
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/user");
+const authenticateToken = require("./middleware/authMiddleware");
 
 dotenv.config();
 connectDB();
@@ -17,6 +19,10 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
+
+app.get("/api/home", authenticateToken, (req, res) => {
+    app.use("/api/home/", userRoutes);
+});
 
 server.listen(process.env.PORT, () => {
     console.log(`Server avviato sulla porta ${process.env.PORT}`);
