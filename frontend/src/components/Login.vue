@@ -21,6 +21,7 @@
 
 <script>
 import { ref } from "vue";
+import api from "@/services/api.js";
 export default {
   name: "Login",
   
@@ -29,7 +30,7 @@ export default {
       username: "",
       password: "",
       nameRules: [
-        (v) => (v && v.length <= 10) || "Name must be 10 characters or less",
+        (v) => (v && v.length <= 10 && v.length >= 3) || "Name must be 10 characters or less",
       ],
     };
   },
@@ -42,7 +43,16 @@ export default {
       const { valid } = await this.form.validate();
       // Chiamata API per il login
       if (valid) {
-        console.log("Login");
+        const response = await api.login({username: this.username, password: this.password})
+          .then((response) => {
+            if (response.status === 200) {              
+              localStorage.setItem("token", response.data.token);
+              this.$router.push("/chats");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       }
     },
     async register() {

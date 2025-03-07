@@ -3,10 +3,10 @@ const { getUserProfile, updateUserProfile, deleteUserProfile } = require('../con
 
 const router = express.Router();
 
-router.get('/profile', getUserProfile);
+router.get('/', getUserProfile);
 
-router.put('/profile', updateUserProfile);
+router.put('/', updateUserProfile);
 
-router.delete('/profile', deleteUserProfile);
+router.delete('/', deleteUserProfile);
 
 module.exports = router;

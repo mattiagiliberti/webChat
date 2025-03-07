@@ -19,10 +19,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
-
-app.get("/api/home", authenticateToken, (req, res) => {
-    app.use("/api/home/", userRoutes);
-});
+app.use("/api/profile", userRoutes, authenticateToken);
 
 server.listen(process.env.PORT, () => {
     console.log(`Server avviato sulla porta ${process.env.PORT}`);

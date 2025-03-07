@@ -1,6 +1,3 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-</script>
 
 <template>
   <!-- <header>
@@ -18,5 +15,18 @@ import { RouterLink, RouterView } from 'vue-router'
 
   <RouterView />
 </template>
+
+<script>
+import { RouterLink, RouterView } from 'vue-router'
+
+export default {
+  name: 'App',
+  computed: {
+    isAuthenticated() {
+      return !!localStorage.getItem('token');
+    },
+  },
+};
+</script>
 
 
