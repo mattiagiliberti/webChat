@@ -1,7 +1,14 @@
 <template>
-  <v-container>
+  <v-container class="d-flex justify-center align-center" style="height: 100vh;">
+    <v-card class="pa-8" elevation="10" width="500px">
+      <h1 class="text-center mb-4">Registrazione</h1>
     <v-form ref="form">
-      <v-text-field label="Username" v-model="username" required></v-text-field>
+      <v-text-field
+        label="Username"
+        v-model="username"
+        :rules="nameRules"
+        required
+      ></v-text-field>
       <v-text-field
         label="Email"
         v-model="email"
@@ -17,6 +24,7 @@
       <v-btn @click="register">Register</v-btn>
       <v-btn @click="goToLogin">Login</v-btn>
     </v-form>
+  </v-card>
   </v-container>
 </template>
 
@@ -30,6 +38,9 @@ export default {
       username: "",
       email: "",
       password: "",
+      nameRules: [
+        (v) => (v && v.length <= 10 && v.length >= 3) || "Name must be 10 characters or less",
+      ],
     };
   },
   methods: {
@@ -52,7 +63,7 @@ export default {
         });
     },
     goToLogin() {
-      this.$router.push("/login"); // Torna alla pagina di login
+      this.$router.push("/"); // Torna alla pagina di login
     },
   },
 };
