@@ -6,6 +6,8 @@ const api = axios.create({
 
 
 export default {
+
+  // Auth API
   async login (credentials) {    
     const response = await api.post("/auth/login", credentials);
     return response;
@@ -14,6 +16,16 @@ export default {
   async register (credentials) {    
     const response = await api.post("/auth/register", credentials);
     return response;
-  }
+  },
+
+  // Chat API
+  async createChat (chat) {    
+    const response = await api.post("/chats", chat);
+    return response;
+  },
+  async getChatById (id) {    
+    const response = await api.get(`/chats/${id}`);
+    return response;
+  },  
 
 }

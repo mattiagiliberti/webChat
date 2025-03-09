@@ -6,9 +6,10 @@
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
 
-
       <!-- nome della persona che ho cliccato -->
-      <v-toolbar-title v-if="activeChat">{{activeChat.title}}</v-toolbar-title>
+      <v-toolbar-title v-if="activeChat">{{
+        activeChat.title
+      }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
     </v-app-bar>
@@ -17,7 +18,7 @@
       :location="$vuetify.display.mobile ? 'left' : undefined"
       temporary
     >
-    <!-- lista di persone con chat attiva -->
+      <!-- lista di persone con chat attiva -->
       <v-list :items="items">
         <v-list-item
           v-for="item in items"
@@ -38,6 +39,7 @@
 </template>
 
 <script>
+import api from "@/services/api";
 export default {
   data() {
     return {
@@ -54,6 +56,13 @@ export default {
   },
   mounted() {
     // Chiamata API per ottenere la lista di persone con chat attiva
+    const userid = localStorage.getItem("userId");
+    console.log(userid);
+
+    api.getChatById(userid).then((response) => {
+      console.log(response.data);
+      this.items = response.data;
+    });
   },
   methods: {
     openChat(item) {

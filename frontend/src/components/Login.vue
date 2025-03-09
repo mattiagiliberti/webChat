@@ -47,8 +47,11 @@ export default {
       if (valid) {
         const response = await api.login({username: this.username, password: this.password})
           .then((response) => {
-            if (response.status === 200) {              
+            if (response.status === 200) {   
+              console.log(response.data);
+                         
               localStorage.setItem("token", response.data.token);
+              localStorage.setItem("userId", response.data.userId);
               this.$router.push("/chats");
             }
           })

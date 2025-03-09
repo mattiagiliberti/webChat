@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const connectDB = require("../utils/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
+const chatRoutes = require("./routes/chat");
 const authenticateToken = require("./middleware/authMiddleware");
 
 dotenv.config();
@@ -18,6 +19,8 @@ app.use(express.json());
 
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/chats", chatRoutes, authenticateToken);
 
 app.use("/api/profile", userRoutes, authenticateToken);
 
