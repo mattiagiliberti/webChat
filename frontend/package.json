@@ -17,6 +17,7 @@
     "vuetify": "^3.7.15"
   },
   "devDependencies": {
+    "@mdi/font": "^7.4.47",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "vite": "^6.1.0",

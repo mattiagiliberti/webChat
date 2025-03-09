@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import ChatsView from "../views/chats/ChatsView.vue";
+import ChatsLayout from "../layouts/ChatLayout.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,7 +20,15 @@ const router = createRouter({
     {
       path: "/chats",
       name: "chats",
-      component: ChatsView,
+      component: ChatsLayout,
+      children: [
+        {
+          name: "ChatsView",
+          path: '',
+          component: ChatsView,
+          props: route => ({ activeChat: route.params.activeChat }),
+        }
+      ],
       meta: { requiresAuth: true },
     },
   ],
