@@ -1,12 +1,16 @@
 const express = require('express');
-const { getUserProfile, updateUserProfile, deleteUserProfile } = require('../controllers/userController');
+const { getUserProfile, updateUserProfile, deleteUserProfile, updatePasswordProfile } = require('../controllers/userController');
+const authenticateToken = require('../middleware/authMiddleware');
 
 const router = express.Router();
+router.use(authenticateToken);
 
-router.get('/', getUserProfile);
+router.get('/:id', getUserProfile);
 
-router.put('/', updateUserProfile);
+router.put('/:id', updateUserProfile);
 
-router.delete('/', deleteUserProfile);
+router.put('/:id/password', updatePasswordProfile);
+
+router.delete('/:id', deleteUserProfile);
 
 module.exports = router;

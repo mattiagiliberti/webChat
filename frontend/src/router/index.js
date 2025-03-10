@@ -38,6 +38,9 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem("token");
 
   if (to.meta.requiresAuth && !isAuthenticated) {
+    alert("Sessione scaduta! Effettuta il login.")
+    localStorage.removeItem('token');
+    localStorage.removeItem('userId');
     next("/");
   } else {
     if (to.name === "home" && isAuthenticated) {

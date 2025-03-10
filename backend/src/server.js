@@ -6,7 +6,6 @@ const connectDB = require("../utils/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const chatRoutes = require("./routes/chat");
-const authenticateToken = require("./middleware/authMiddleware");
 
 dotenv.config();
 connectDB();
@@ -20,9 +19,9 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
-app.use("/api/chats", chatRoutes, authenticateToken);
+app.use("/api/chats", chatRoutes);
 
-app.use("/api/profile", userRoutes, authenticateToken);
+app.use("/api/profile", userRoutes);
 
 server.listen(process.env.PORT, () => {
     console.log(`Server avviato sulla porta ${process.env.PORT}`);
