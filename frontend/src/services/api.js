@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api", 
+  baseURL: "http://localhost:3000/api", 
 });
 
 // interceptors per aggiungere il token alle richieste
@@ -31,6 +31,10 @@ export default {
     return response;
   },
 
+  async logout () {
+    localStorage.removeItem("token");
+  },
+
   // Chat API
   async createChat (chat) {    
     const response = await api.post("/chats", chat);
@@ -41,4 +45,24 @@ export default {
     return response;
   },  
 
+  //User API
+  async getUserProfile (id) {
+    const response = await api.get(`/user/${id}`);
+    return response;
+  },
+
+  async updateUserProfile (id, data) {
+    const response = await api.put(`/user/${id}`, data);
+    return response;
+  },
+
+  async updatePasswordProfile (id, data) {
+    const response = await api.put(`/user/${id}/password`, data);
+    return response;
+  },
+
+  async deleteUserProfile (id) {
+    const response = await api.delete(`/user/${id}`);
+    return response;
+  },
 }

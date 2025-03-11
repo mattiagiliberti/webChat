@@ -21,7 +21,7 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/chats", chatRoutes);
 
-app.use("/api/profile", userRoutes);
+app.use("/api/user", userRoutes);
 
 server.listen(process.env.PORT, () => {
     console.log(`Server avviato sulla porta ${process.env.PORT}`);
