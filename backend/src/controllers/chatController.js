@@ -17,8 +17,15 @@ const getChatById = async (req, res) => {
 
     const chat = await Chat.find({ "participants.userId": userId })
       .sort({ "lastMessage.timestamp": -1 })
-      .populate("participants", "username userId -_id"); 
+      .select("-_id -participants._id"); 
 
+      const otherParticipant = chat.map(c => {
+        return c.participants.find(p => p.userId.toString() !== req.params.id);
+      });
+      chat.forEach((c, index) => {
+        c._doc.otherParticipant = otherParticipant[index];
+      });
+      
     if (!chat || chat.length === 0) {
       return res.status(404).json({ message: "Chat non trovata" });
     }

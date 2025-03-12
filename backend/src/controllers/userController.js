@@ -75,9 +75,23 @@ const deleteUserProfile = async (req, res) => {
     }
 };
 
+// Search user by username
+const searchUserByUsername = async (req, res) => {
+    try {
+        const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('username _id');
+        if (!users.length) {
+            return res.status(404).json({ message: 'Nessun utente trovato' });
+        }
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     getUserProfile,
     updateUserProfile,
     deleteUserProfile,
-    updatePasswordProfile
+    updatePasswordProfile,
+    searchUserByUsername
 };
