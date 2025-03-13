@@ -24,6 +24,7 @@ const getChatById = async (req, res) => {
       });
       chat.forEach((c, index) => {
         c._doc.otherParticipant = otherParticipant[index];
+        delete c._doc.participants;
       });
       
     if (!chat || chat.length === 0) {

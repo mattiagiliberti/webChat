@@ -6,6 +6,7 @@ const connectDB = require("../utils/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const chatRoutes = require("./routes/chat");
+const upload = require('../utils/multer'); 
 
 dotenv.config();
 connectDB();

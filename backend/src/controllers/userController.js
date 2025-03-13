@@ -1,7 +1,6 @@
 const User = require('../models/Users');
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
+const upload = require('../../utils/multer');
 // Get user profile
 const getUserProfile = async (req, res) => {
     try {
@@ -9,7 +8,7 @@ const getUserProfile = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'Utente non trovato' });
         }
-        res.json(user);
+        res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -69,7 +68,7 @@ const deleteUserProfile = async (req, res) => {
         }
 
         await user.remove();
-        res.json({ message: 'User deleted' });
+        res.json({ message: 'Utente eliminato' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -78,11 +77,11 @@ const deleteUserProfile = async (req, res) => {
 // Search user by username
 const searchUserByUsername = async (req, res) => {
     try {
-        const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('username _id');
+        const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('_id username image');
         if (!users.length) {
             return res.status(404).json({ message: 'Nessun utente trovato' });
         }
-        res.json(users);
+        res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
