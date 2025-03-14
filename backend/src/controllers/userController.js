@@ -1,6 +1,9 @@
 const User = require('../models/Users');
 const bcrypt = require("bcryptjs");
 const upload = require('../../utils/multer');
+const fs = require('fs');
+const path = require('path');
+
 // Get user profile
 const getUserProfile = async (req, res) => {
     try {
@@ -16,27 +19,50 @@ const getUserProfile = async (req, res) => {
 
 // Update user profile
 const updateUserProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'Utente non trovato' });
+    upload.single('image')(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: err.message });
         }
 
-        user.username = req.body.username || user.username;
-        user.bio = req.body.bio || user.bio;
-        user.image = req.body.image || user.image;
+        try {
+            const user = await User.findById(req.params.id);
+            if (!user) {
+                return res.status(404).json({ message: 'Utente non trovato' });
+            }
 
-        const updatedUser = await user.save();
-        if (!updatedUser) {
-            return res.status(500).json({ message: 'Errore' });
+            user.username = req.body.username || user.username;
+            user.bio = req.body.bio || user.bio;
+
+            if (req.file) {
+                
+                const uploadDir = path.join(__dirname, '../../uploads', req.params.id);
+
+                if (!fs.existsSync(uploadDir)) {
+                    fs.mkdirSync(uploadDir, { recursive: true });
+                } else {
+                    const files = fs.readdirSync(uploadDir);
+                    files.forEach(file => fs.unlinkSync(path.join(uploadDir, file)));
+                }
+
+                const fileName = req.file.originalname.replace(/\s+/g, '');
+                const filePath = path.join(uploadDir, fileName);
+                fs.renameSync(req.file.path, filePath);
+
+                user.image = `/uploads/${req.params.id}/${fileName}`;
+            }
+
+            const updatedUser = await user.save();
+            if (!updatedUser) {
+                return res.status(500).json({ message: 'Errore' });
+            }
+            res.status(200).send("Profilo aggiornato con successo");
+        } catch (error) {
+            res.status(500).json({ message: error.message });
         }
-        res.status(200).send("Profilo aggiornato con successo");
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+    });
 };
 
-// Update user profile
+// Update user password
 const updatePasswordProfile = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);

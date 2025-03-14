@@ -1,23 +1,23 @@
 <template>
-  <v-container class="d-flex justify-center align-center" style="height: 100vh;">
+  <v-container class="d-flex justify-center align-center" style="height: 100vh">
     <v-card class="pa-8" elevation="10" width="500px">
-    <v-form ref="form">
-      <v-text-field
-        label="Username"
-        v-model="username"
-        :rules="nameRules"
-        required
-      ></v-text-field>
-      <v-text-field
-        label="Password"
-        v-model="password"
-        type="password"
-        required
-      ></v-text-field>
-      <v-btn @click="submit">Login</v-btn>
-      <v-btn @click="register">Register</v-btn>
-    </v-form>
-  </v-card>
+      <v-form ref="form">
+        <v-text-field
+          label="Username"
+          v-model="username"
+          :rules="nameRules"
+          required
+        ></v-text-field>
+        <v-text-field
+          label="Password"
+          v-model="password"
+          type="password"
+          required
+        ></v-text-field>
+        <v-btn @click="submit">Login</v-btn>
+        <v-btn @click="register">Register</v-btn>
+      </v-form>
+    </v-card>
   </v-container>
 </template>
 
@@ -26,13 +26,15 @@ import { ref } from "vue";
 import api from "@/services/api.js";
 export default {
   name: "Login",
-  
+
   data() {
     return {
       username: "",
       password: "",
       nameRules: [
-        (v) => (v && v.length <= 10 && v.length >= 3) || "Name must be 10 characters or less",
+        (v) =>
+          (v && v.length <= 10 && v.length >= 3) ||
+          "Name must be 10 characters or less",
       ],
     };
   },
@@ -45,11 +47,12 @@ export default {
       const { valid } = await this.form.validate();
       // Chiamata API per il login
       if (valid) {
-        const response = await api.login({username: this.username, password: this.password})
+        const response = await api
+          .login({ username: this.username, password: this.password })
           .then((response) => {
-            if (response.status === 200) {   
+            if (response.status === 200) {
               console.log(response.data);
-                         
+
               localStorage.setItem("token", response.data.token);
               localStorage.setItem("userId", response.data.userId);
               this.$router.push("/chats");

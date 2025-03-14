@@ -6,7 +6,6 @@ const connectDB = require("../utils/db");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const chatRoutes = require("./routes/chat");
-const upload = require('../utils/multer'); 
 
 dotenv.config();
 connectDB();
@@ -16,6 +15,7 @@ const server = http.createServer(app);
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 
 app.use("/api/auth", authRoutes);
