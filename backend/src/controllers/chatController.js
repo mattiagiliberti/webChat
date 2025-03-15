@@ -13,6 +13,9 @@ const createChat = async (req, res) => {
 
 const getChatById = async (req, res) => {
   try {
+    if (req.user.userId !== req.params.id) {
+      return res.status(403).json({ message: "Accesso negato" });
+    }
     const userId = new mongoose.Types.ObjectId(req.params.id);
 
     const chat = await Chat.find({ "participants.userId": userId })

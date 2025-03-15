@@ -13,9 +13,13 @@ const chatSchema = new Schema({
         required: true
     },
     lastMessage: {
-        sender: {
+        senderId: {
             type: Schema.Types.ObjectId,
             ref: 'Users',
+            required: true
+        },
+        senderUser: {
+            type: String,
             required: true
         },
         text: {

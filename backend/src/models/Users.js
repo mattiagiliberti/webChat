@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     bio: { type: String },
     image: { type: String },
+    isOnline: { type: Boolean, default: false },
+    lastSeen: { type: Date, default: null },
     createdAt: { type: Date, default: Date.now }
 }, { collection: "Users" });
 

@@ -103,7 +103,7 @@ const deleteUserProfile = async (req, res) => {
 // Search user by username
 const searchUserByUsername = async (req, res) => {
     try {
-        const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('_id username image');
+        const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('_id username image isOnline');
         if (!users.length) {
             return res.status(404).json({ message: 'Nessun utente trovato' });
         }
