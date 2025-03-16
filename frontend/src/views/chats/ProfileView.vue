@@ -10,6 +10,13 @@
             required
           ></v-text-field>
 
+          <v-text-field
+            :disabled="true"
+            v-model="user.email"
+            label="Email"
+            required
+          ></v-text-field>
+
           <v-textarea
             v-model="user.bio"
             label="Biografia"
@@ -56,6 +63,7 @@ export default {
     return {
       user: {
         username: "",
+        email: "",
         bio: "",
         image: "",
       },
@@ -69,7 +77,8 @@ export default {
     const userId = localStorage.getItem("userId");
     console.log(userId);
 
-    api.getUserProfile(userId) .then((response) => {
+    await api.getUserProfile(userId)
+    .then((response) => {
       console.log("Dati utente ricevuti:", response.data);
       this.user = response.data;
     })

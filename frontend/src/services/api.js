@@ -45,6 +45,11 @@ export default {
     return response;
   },  
 
+  async searchUserbyUsername (query) {
+    const response = await api.get(`/user/search/${query}`);
+    return response;
+  },
+
   //User API
   async getUserProfile (id) {
     const response = await api.get(`/user/${id}`);
@@ -64,5 +69,5 @@ export default {
   async deleteUserProfile (id) {
     const response = await api.delete(`/user/${id}`);
     return response;
-  },
+  }
 }
