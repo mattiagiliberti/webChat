@@ -1,55 +1,60 @@
 <template>
   <v-container class="profile-edit">
+    <h1>Modifica Profilo</h1>
     <v-row>
       <v-col cols="12">
-        <h1>Modifica Profilo</h1>
-        <v-form @submit.prevent="updateUser">
-          <v-text-field
-            v-model="user.username"
-            label="Username"
-            required
-          ></v-text-field>
+        <v-img
+          v-if="user.image"
+          :src="serverUrl + user.image"
+          width="100"
+          height="100"
+          style="border-radius: 50%"
+        ></v-img>
+        <v-file-input
+          v-model="selectedFile"
+          label="Carica Immagine"
+          accept="image/*"
+          prepend-icon="mdi-camera"
+          @change="onImageChange"
+        ></v-file-input>
+        <v-btn @click="uploadImage" color="primary">Carica Immagine</v-btn>
 
-          <v-text-field
-            :disabled="true"
-            v-model="user.email"
-            label="Email"
-            required
-          ></v-text-field>
+        <v-text-field
+          v-model="user.username"
+          label="Username"
+          required
+        ></v-text-field>
 
-          <v-textarea
-            v-model="user.bio"
-            label="Biografia"
-          ></v-textarea>
+        <v-text-field
+          :disabled="true"
+          v-model="user.email"
+          label="Email"
+          required
+        ></v-text-field>
 
-          <v-text-field
-            v-model="user.image"
-            label="Immagine (URL)"
-          ></v-text-field>
+        <v-textarea v-model="user.bio" label="Biografia"></v-textarea>
 
-          <v-btn type="submit" color="primary">Salva Modifiche</v-btn>
-        </v-form>
+        <v-btn @click="updateUser" color="primary">Salva Modifiche</v-btn>
       </v-col>
-
+    </v-row>
+    <v-row>
       <v-col cols="12">
         <h2>Cambia Password</h2>
-        <v-form @submit.prevent="updatePassword">
-          <v-text-field
-            v-model="passwordData.oldPassword"
-            label="Vecchia Password"
-            type="password"
-            required
-          ></v-text-field>
+        <v-text-field
+          v-model="passwordData.oldPassword"
+          label="Vecchia Password"
+          type="password"
+          required
+        ></v-text-field>
 
-          <v-text-field
-            v-model="passwordData.newPassword"
-            label="Nuova Password"
-            type="password"
-            required
-          ></v-text-field>
+        <v-text-field
+          v-model="passwordData.newPassword"
+          label="Nuova Password"
+          type="password"
+          required
+        ></v-text-field>
 
-          <v-btn type="submit" color="primary">Aggiorna Password</v-btn>
-        </v-form>
+        <v-btn @click="updatePassword" color="primary">Aggiorna Password</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -65,37 +70,59 @@ export default {
         username: "",
         email: "",
         bio: "",
-        image: "",
+        image: null,
       },
       passwordData: {
         oldPassword: "",
         newPassword: "",
       },
+      selectedFile: null,
     };
-  },  
+  },
+  setup() {
+    const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
+    return { serverUrl };
+  },
   async mounted() {
     const userId = localStorage.getItem("userId");
-    console.log(userId);
-
-    await api.getUserProfile(userId)
-    .then((response) => {
+    await api.getUserProfile(userId).then((response) => {
       console.log("Dati utente ricevuti:", response.data);
       this.user = response.data;
-    })
-
+    });
   },
-  methods:{
-    async updateUser(){
+  methods: {
+    async updateUser() {
       const userId = localStorage.getItem("userId");
-      await api.updateUserProfile(userId, this.user);
-      alert("Profilo aggiornato con successo!");
+      await api.updateUserProfile(userId, this.user).then((response) => {
+        alert("Profilo aggiornato con successo!");
+      });
     },
-    async updatePassword(){
+    async updatePassword() {
       const userId = localStorage.getItem("userId");
       await api.updatePasswordProfile(userId, this.passwordData);
       alert("Password aggiornata con successo!");
-    }
-  }
+    },
+    onImageChange(event) {
+      this.selectedFile = event.target.files[0];
+    },
+    async uploadImage() {
+      const userId = localStorage.getItem("userId");
+      if (!this.selectedFile) {
+        alert("Seleziona un'immagine prima di caricare.");
+        return;
+      }
+
+      this.user.image = this.selectedFile;
+
+      try {
+        api.updateUserProfile(userId, this.user).then((response) => {
+          console.log("Immagine aggiornata con successo:", response);
+        });
+      } catch (error) {
+        console.log("Errore nel caricamento dell'immagine", error);
+      }
+    },
+  },
 };
 </script>
 
@@ -108,7 +135,9 @@ form {
   display: flex;
   flex-direction: column;
 }
-input, textarea, button {
+input,
+textarea,
+button {
   margin: 10px 0;
   padding: 8px;
 }

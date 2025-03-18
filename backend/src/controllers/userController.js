@@ -106,8 +106,9 @@ const searchUserByUsername = async (req, res) => {
         const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('_id username image isOnline');
         if (!users.length) {
             return res.status(404).json({ message: 'Nessun utente trovato' });
-        }
-        res.status(200).json(users);
+        }        
+        const filteredUsers = users.filter(user => user._id.toString() !== req.user.userId);
+        res.status(200).json(filteredUsers);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

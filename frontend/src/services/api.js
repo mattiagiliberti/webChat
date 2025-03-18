@@ -1,7 +1,7 @@
 import axios from "axios";
-
+const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
 const api = axios.create({
-  baseURL: "http://localhost:3000/api", 
+  baseURL: serverUrl+"/api", 
 });
 
 // interceptors per aggiungere il token alle richieste
@@ -56,8 +56,12 @@ export default {
     return response;
   },
 
-  async updateUserProfile (id, data) {
-    const response = await api.put(`/user/${id}`, data);
+  async updateUserProfile (id, data) {        
+    const response = await api.put(`/user/${id}`, data,{
+      headers:{
+        "Content-Type": "multipart/form-data",
+      }
+    });
     return response;
   },
 
