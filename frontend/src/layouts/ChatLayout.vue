@@ -7,8 +7,8 @@
       ></v-app-bar-nav-icon>
 
       <!-- Nome della persona che ho cliccato -->
-      <v-toolbar-title v-if="activeChat"
-        >{{ activeChat.otherParticipant.username }}</v-toolbar-title>  
+      <v-toolbar-title v-if="activeChat"@click="openProfile(activeChat.otherParticipant)">
+        {{ activeChat.otherParticipant.username }}</v-toolbar-title>  
 
       <v-spacer></v-spacer>
       <v-btn icon @click="goToProfile">
@@ -35,7 +35,6 @@
         no-data-text="Nessun utente trovato"
       >
       <template v-slot:item="{ item, props }">
-        {{ serverUrl+item.value+'/'+item.raw.image }}
         <v-list-item
             v-bind="props"
             :prepend-avatar="serverUrl+item.value+'/'+item.raw.image"
@@ -98,6 +97,7 @@ export default {
       items: [],
       searchResults: [],
       searchQuery: null,
+      searchUser: null,
     };
   },
   setup() {
@@ -148,7 +148,10 @@ export default {
       }
     },
     openProfile(user) {
-      console.log("user");
+      console.log(user);
+      this.searchUser = user;
+      this.$route.name = this.searchUser;
+      this.$router.push("/chats/user/");
       // Mostra profilo utente
     },
     searchUsers(val) {

@@ -4,6 +4,7 @@ import RegisterView from "../views/RegisterView.vue";
 import ChatsView from "../views/chats/ChatsView.vue";
 import ChatsLayout from "../layouts/ChatLayout.vue";
 import ProfileView from "../views/chats/ProfileView.vue";
+import UserView from "../views/chats/UserView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,12 @@ const router = createRouter({
           name: "ProfileView",
           path: '/profile',
           component: ProfileView,
+        },
+        {
+          name: "UserView",
+          path: '/chats/user/',
+          component: UserView,
+          props: route => ({ searchUser: route.params.searchUser }),
         }
       ],
       meta: { requiresAuth: true },
