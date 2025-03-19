@@ -37,7 +37,7 @@
       <template v-slot:item="{ item, props }">
         <v-list-item
             v-bind="props"
-            :prepend-avatar="serverUrl+item.value+'/'+item.raw.image"
+            :prepend-avatar="serverUrl+'/'+item.raw.image"
             :title="item.raw.username"
             :append-icon="item.raw.isOnline ? 'mdi-checkbox-blank-circle' : 'mdi-checkbox-blank-circle-outline'"
             @click="openProfile(item.raw)"
@@ -78,7 +78,7 @@
     <!-- <v-app-bar title="Application bar"></v-app-bar> -->
 
     <v-main class="align-center justify-center">
-      <router-view :active-chat="activeChat"></router-view>
+      <router-view :active-chat="activeChat" :search-user="searchUser"></router-view>
     </v-main>
   </v-layout>
 </template>
@@ -148,11 +148,8 @@ export default {
       }
     },
     openProfile(user) {
-      console.log(user);
-      this.searchUser = user;
-      this.$route.name = this.searchUser;
-      this.$router.push("/chats/user/");
-      // Mostra profilo utente
+      this.searchUser = user
+      this.$router.push(`/user/${user._id}`);
     },
     searchUsers(val) {
       this.searchQuery = val;

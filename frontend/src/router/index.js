@@ -37,7 +37,7 @@ const router = createRouter({
         },
         {
           name: "UserView",
-          path: '/chats/user/',
+          path: '/user/:id/',
           component: UserView,
           props: route => ({ searchUser: route.params.searchUser }),
         }
