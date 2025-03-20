@@ -37,10 +37,11 @@ const router = createRouter({
         },
         {
           name: "UserView",
-          path: '/user/:id/',
+          path: '/user/:id',
           component: UserView,
           props: route => ({ searchUser: route.params.searchUser }),
         }
+        
       ],
       meta: { requiresAuth: true },
     },

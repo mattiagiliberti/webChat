@@ -148,8 +148,12 @@ export default {
       }
     },
     openProfile(user) {
-      this.searchUser = user
-      this.$router.push(`/user/${user._id}`);
+      this.searchUser = user;
+      if (user._id) {
+        this.$router.push(`/user/${user._id}`);
+      } else {
+        this.$router.push(`/user/${user.userId}`);
+      }
     },
     searchUsers(val) {
       this.searchQuery = val;
@@ -162,6 +166,7 @@ export default {
         this.searchResults = [];
       }
     },
+
   },
   watch: {
     group() {
