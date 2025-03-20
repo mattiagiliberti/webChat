@@ -21,7 +21,7 @@ const getChatById = async (req, res) => {
 
     const chat = await Chat.find({ "participants.userId": userId })
       .sort({ "lastMessage.timestamp": -1 })
-      .select("-_id -participants._id"); 
+      .select("-participants._id"); 
       const userIds = chat.map(c => c.participants.find(p => p.userId.toString() !== req.params.id).userId);
       const users = await User.find({ _id: { $in: userIds } }).select("image");
       const userImageMap = users.reduce((map, user) => {

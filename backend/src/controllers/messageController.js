@@ -4,7 +4,7 @@ const { createMessageInDB } = require('../services/messageService');
 const getAllMessagesByChat = async (req, res) => {
     try {
         const userId = req.user.userId; 
-        const chatId = req.query.chatId;    
+        const chatId = req.params.id;    
         const chat = await Chat.findOne({ _id: chatId, 'participants.userId': userId });
 
         if (!chat) {

@@ -5,7 +5,7 @@ const authenticateToken = require('../middleware/authMiddleware');
 const router = express.Router();
 router.use(authenticateToken);
 
-router.get('/', getAllMessagesByChat);
+router.get('/:id', getAllMessagesByChat);
 
 router.post('/', createMessage);
 
