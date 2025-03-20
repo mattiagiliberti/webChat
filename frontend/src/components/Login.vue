@@ -1,20 +1,26 @@
 <template>
-  <v-container class="d-flex justify-center align-center" style="height: 100vh">
-    <v-card class="pa-8" elevation="10" width="500px">
+  <v-container class="align-center" style="height: 100vh">
+    <v-card class="pa-8" elevation="10" title="Login">
       <v-form ref="form">
         <v-text-field
           label="Username"
           v-model="username"
           :rules="nameRules"
+          prepend-inner-icon="mdi-account"
           required
+          color="deep-purple-lighten-2"
         ></v-text-field>
         <v-text-field
           label="Password"
+          outlined
+          prepend-inner-icon="mdi-lock"
           v-model="password"
           type="password"
           required
+          :rules="passwordRules"
+          color="deep-purple-lighten-2"
         ></v-text-field>
-        <v-btn @click="submit">Login</v-btn>
+        <v-btn @click="submit" color="deep-purple-lighten-2">Login</v-btn>
         <v-btn @click="register">Register</v-btn>
       </v-form>
     </v-card>
@@ -34,7 +40,12 @@ export default {
       nameRules: [
         (v) =>
           (v && v.length <= 10 && v.length >= 3) ||
-          "Name must be 10 characters or less",
+          "Username deve essere compreso tra 3 e 10 caratteri",
+      ],
+      passwordRules: [
+        (v) =>
+          (v.length >= 3) ||
+          "Password deve essere avere almeno 8 caratteri",
       ],
     };
   },

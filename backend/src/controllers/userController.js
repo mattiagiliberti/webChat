@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const upload = require('../../utils/multer');
 const fs = require('fs');
 const path = require('path');
+const Chat = require('../models/Chats')
 
 // Get user profile
 const getUserProfile = async (req, res) => {
@@ -104,10 +105,22 @@ const deleteUserProfile = async (req, res) => {
 const searchUserByUsername = async (req, res) => {
     try {
         const users = await User.find({ username: new RegExp(req.params.query, 'i') }).select('_id username image isOnline');
+        
         if (!users.length) {
             return res.status(404).json({ message: 'Nessun utente trovato' });
-        }        
-        const filteredUsers = users.filter(user => user._id.toString() !== req.user.userId);
+        }
+        
+        const chats = await Chat.find({ "participants.userId": req.user.userId }).select('participants');
+        
+        // Estraggo id di utenti con cui ha una chat
+        const chatUserIds = new Set(
+            chats.flatMap(chat => chat.participants.map(p => p.userId.toString()))
+        );
+        
+        // Elimino se stesso e quelli con cui ha gia una chat
+        const filteredUsers = users.filter(user => 
+            user._id.toString() !== req.user.userId && !chatUserIds.has(user._id.toString())
+        );
         res.status(200).json(filteredUsers);
     } catch (error) {
         res.status(500).json({ message: error.message });

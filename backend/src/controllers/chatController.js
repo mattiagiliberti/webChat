@@ -6,7 +6,7 @@ const createChat = async (req, res) => {
   try {
     const chat = new Chat(req.body);
     await chat.save();
-    res.status(201).send(chat);
+    res.status(201).send({message:"Chat creata con successo!"});
   } catch (error) {
     res.status(400).send(error);
   }
@@ -22,12 +22,18 @@ const getChatById = async (req, res) => {
     const chat = await Chat.find({ "participants.userId": userId })
       .sort({ "lastMessage.timestamp": -1 })
       .select("-participants._id"); 
+      if (!chat || chat.length === 0) {
+        return res.status(404).json({ message: "Chat non trovata" });
+      }
       const userIds = chat.map(c => c.participants.find(p => p.userId.toString() !== req.params.id).userId);
+
       const users = await User.find({ _id: { $in: userIds } }).select("image");
+
       const userImageMap = users.reduce((map, user) => {
         map[user._id.toString()] = user.image;
         return map;
       }, {});
+
       const otherParticipant = chat.map(c => {
         const participant = c.participants.find(p => p.userId.toString() !== req.params.id);
         return {
@@ -35,6 +41,7 @@ const getChatById = async (req, res) => {
           image: userImageMap[participant.userId.toString()]
         };
       });
+
       chat.forEach((c, index) => {
         c._doc.otherParticipant = otherParticipant[index];
         delete c._doc.participants;

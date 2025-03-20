@@ -1,32 +1,56 @@
 <template>
-  <v-card class="mx-auto" max-width="400" flat tile theme="light">
-    <v-card-title class="text-center text-h4"> Informazioni utente </v-card-title>
+  <v-card class="mx-auto" style="height: 100vh">
     <v-card-text>
-      <v-card-title>{{ user.username }}</v-card-title>
       <v-img
         v-if="user.image"
         :src="serverUrl + user.image"
         class="align-end text-white mb-2"
-        contain
-      ></v-img>
+        height="300"
+        cover
+      >
+        <v-card-item>
+          <template v-slot:title>
+            <v-icon
+              :icon="
+                user.isOnline
+                  ? 'mdi-checkbox-blank-circle'
+                  : 'mdi-checkbox-blank-circle'
+              "
+              :color="user.isOnline ? 'green' : 'red'"
+            ></v-icon>
+            {{ user.username }}
+          </template>
+        </v-card-item>
+      </v-img>
 
-      <v-card-title>Biografia</v-card-title>
-      <v-card-text>{{ user.bio }}</v-card-text>
+      <v-card-item>
+        <template v-slot:subtitle>
+          <v-icon icon="mdi-text-account"></v-icon>
+          Biografia
+          <v-card-text>{{ user.bio }}</v-card-text>
+        </template>
+      </v-card-item>
 
-      <v-card-title>Creazione dell'account</v-card-title>
-      <v-card-text>{{ formatDate(user.createdAt) }}</v-card-text>
+      <v-divider></v-divider>
+
+      <v-card-item>
+        <template v-slot:subtitle>
+          <v-icon icon="mdi-pencil"></v-icon>
+          Data di creazione
+          <v-card-text>{{ formatDate(user.createdAt) }}</v-card-text>
+        </template>
+      </v-card-item>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions class="align-end">
       <v-btn @click="chatWithUser" color="primary">Inizia la chat</v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
-
 <script>
 import api from "@/services/api";
 import { useRouter } from "vue-router";
-import { formatDate } from "@/utils/date"; 
+import { formatDate } from "@/utils/date";
 export default {
   name: "UserView",
   data() {
