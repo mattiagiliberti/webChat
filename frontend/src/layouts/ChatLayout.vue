@@ -8,7 +8,8 @@
 
       <!-- Nome della persona che ho cliccato -->
       <v-toolbar-title v-if="activeChat"@click="openProfile(activeChat.otherParticipant)">
-        {{ activeChat.otherParticipant.username }}</v-toolbar-title>  
+        {{ activeChat.otherParticipant.username }}
+      </v-toolbar-title>  
 
       <v-spacer></v-spacer>
       <v-btn icon @click="goToProfile">
