@@ -50,6 +50,7 @@
 <script>
 import api from "@/services/api";
 import { formatDate } from "@/utils/date";
+import { useChatStore } from "@/stores/chatStore";
 export default {
   name: "UserView",
   data() {
@@ -89,26 +90,27 @@ export default {
     
     async chatWithUser() {
       const userId = localStorage.getItem("userId");
-      
+      const chatStore = useChatStore();
       const response = await api.getUserProfile(userId);
       const loggedUser = response.data;
-  
+      
       const chatData = {
         participants:[{
           username: this.user.username,
           userId: this.user._id
-         },
-         {
+        },
+        {
           username: loggedUser.username,
           userId: userId
-         }
-        ],
-      };
-      await api.createChat(chatData).then((response) => {
-        console.log(response.data);
+        }
+      ],
+    };
+      const success = await chatStore.startNewChat(chatData, userId, this.user._id)      
+      if (success.status) {
         this.$router.push("/chats");
-      });
-      
+      }else{
+        alert(success.message)
+      }
     },
   },
 };

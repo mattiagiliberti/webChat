@@ -18,7 +18,7 @@
 
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-
+import { useSocketStore } from './stores/socketStore';
 export default {
   name: 'App',
   computed: {
@@ -26,6 +26,13 @@ export default {
       return !!localStorage.getItem('token');
     },
   },
+  mounted(){
+    const socketStore = useSocketStore();
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      socketStore.initializeSocket(userId); 
+    }
+  }
 };
 </script>
 

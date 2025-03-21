@@ -33,6 +33,7 @@ export default {
 
   async logout () {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
   },
 
   // Chat API

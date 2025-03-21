@@ -29,7 +29,8 @@
 
 <script>
 import { ref } from "vue";
-import api from "@/services/api.js";
+import { useAuthStore } from "@/stores/authStore";
+import { useRouter } from "vue-router";
 export default {
   name: "Login",
 
@@ -43,35 +44,35 @@ export default {
           "Username deve essere compreso tra 3 e 10 caratteri",
       ],
       passwordRules: [
-        (v) =>
-          (v.length >= 3) ||
-          "Password deve essere avere almeno 8 caratteri",
+        (v) => v.length >= 3 || "Password deve essere avere almeno 8 caratteri",
       ],
     };
   },
   setup() {
     const form = ref(null);
-    return { form };
+    const router = useRouter();
+    return { form, router };
   },
   methods: {
     async submit() {
       const { valid } = await this.form.validate();
       // Chiamata API per il login
       if (valid) {
-        const response = await api
-          .login({ username: this.username, password: this.password })
-          .then((response) => {
-            if (response.status === 200) {
-              console.log(response.data);
-
-              localStorage.setItem("token", response.data.token);
-              localStorage.setItem("userId", response.data.userId);
-              this.$router.push("/chats");
-            }
-          })
-          .catch((error) => {
-            console.log(error);
+        try {
+          const authStore = useAuthStore();
+          const response = await authStore.login({
+            username: this.username,
+            password: this.password,
           });
+          if (!response.success) {
+            console.log(response.message);
+            
+          }else{
+            this.router.push("/chats")
+          }
+        } catch (error) {
+          console.error("Errore di login:", error.message);
+        }
       }
     },
     async register() {

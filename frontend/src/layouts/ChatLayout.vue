@@ -38,7 +38,7 @@
       <template v-slot:item="{ item, props }">
         <v-list-item
             v-bind="props"
-            :prepend-avatar="serverUrl+'/'+item.raw.image"
+            :prepend-avatar="serverUrl+item.raw.image"
             :title="item.raw.username"
             :append-icon="item.raw.isOnline ? 'mdi-checkbox-blank-circle' : 'mdi-checkbox-blank-circle-outline'"
             @click="openProfile(item.raw)"
@@ -49,9 +49,9 @@
 
 
       <!-- Lista di persone con chat attiva -->
-      <v-list :items="formattedMessages">
+      <v-list :items="loadChats">
         <v-list-item
-          v-for="item in formattedMessages"
+          v-for="item in loadChats"
           :key="item.value"
           @click="openChat(item)"
           :prepend-avatar="serverUrl+item.otherParticipant.image"
@@ -88,6 +88,8 @@
 import api from "@/services/api";
 import { useRouter } from "vue-router";
 import { formatDate } from "@/utils/date";
+import { useChatStore } from "@/stores/chatStore";
+import { useAuthStore } from "@/stores/authStore";
 
 export default {
   data() {
@@ -104,14 +106,13 @@ export default {
   setup() {
     const router = useRouter();
     const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
-
+    const authStore = useAuthStore();
     const logout = () => {
-      api.logout();
-      router.push("/"); // Reindirizza alla pagina di login
+      authStore.logout();
     };
 
     const goToProfile = () => {
-      router.push("/profile"); // Vai alla pagina di modifica profilo
+      router.push("/profile"); 
     };
 
     return { logout, goToProfile, serverUrl };
@@ -126,22 +127,23 @@ export default {
         },
       }));
     },
+    loadChats(){
+      const chatStore = useChatStore();
+      return chatStore.chats;
+    }
   },
   mounted() {
     // Chiamata API per ottenere la lista di persone con chat attiva
-    const userid = localStorage.getItem("userId");
-    console.log(userid);
-    
-    api.getChatById(userid).then((response) => {
-      console.log(response.data);
-      this.items = response.data;
-      console.log(this.items);
-    });
+    const userId = localStorage.getItem("userId");
+    const chatStore = useChatStore();
+    if (!chatStore.chats.length) {
+      chatStore.fetchChats(userId);
+    }
   },
   methods: {
     openChat(item) {
       console.log(item);
-      this.group = false;
+      this.drawer = false;
       this.activeChat = item;
 
       if (this.$route.path !== "/chats") {
@@ -170,9 +172,6 @@ export default {
 
   },
   watch: {
-    group() {
-      this.drawer = false;
-    },
   },
 };
 </script>

@@ -26,14 +26,14 @@ module.exports = (server) => {
       lastSeen: new Date(),
     });
 
-    io.emit("user_online", userId);
+    io.emit("user:online", userId);
     connectedUsers.set(userId, socket.id);
     console.log(`Utente ${userId} registrato con socket ${socket.id}`);
 
     // Invio di un messaggio privato
-    socket.on( "private_message", async ({ senderId, receiverId, message, chatId, senderUser }) => {
+    socket.on("message:send", async ({ senderId, receiverId, message, chatId, senderUser }) => {
         const receiverSocketId = connectedUsers.get(receiverId);
-        console.log(  `Messaggio privato da ${senderId} a ${receiverId}: ${message}` );
+        console.log(`Messaggio privato da ${senderId} a ${receiverId}: ${message}` );
 
         try {
             const newMessage = await createMessageInDB({
@@ -49,10 +49,17 @@ module.exports = (server) => {
         }
 
         if (receiverSocketId) {
-          io.to(receiverSocketId).emit("new_message", { senderId, message });
+          io.to(receiverSocketId).emit("message:recieve", { senderId, message });
         }
       }
     );
+
+    // Aggiornamento nuova chat
+    socket.on("chat:new", ({ from, to, chat }) => {
+      console.log(`Nuova chat tra ${from} e ${to}`);
+      const receiverSocketId = connectedUsers.get(to);
+      io.to(receiverSocketId).emit("chat:update", to);
+    });
 
     // Disconnessione dell'utente
     socket.on("disconnect", () => {
@@ -68,7 +75,7 @@ module.exports = (server) => {
         setTimeout(async () => {
           const user = await User.findById(disconnectedUserId);
           if (user && !connectedUsers.has(disconnectedUserId)) {
-            io.emit("user_offline", disconnectedUserId);
+            io.emit("user:offline", disconnectedUserId);
             await User.findByIdAndUpdate(disconnectedUserId, {
               isOnline: false,
               lastSeen: new Date(),
