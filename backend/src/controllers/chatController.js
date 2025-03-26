@@ -6,9 +6,9 @@ const createChat = async (req, res) => {
   try {
     const chat = new Chat(req.body);
     await chat.save();
-    res.status(201).send({message:"Chat creata con successo!"});
+    res.status(201).json({ message: "Chat creata con successo!" });
   } catch (error) {
-    res.status(400).send(error);
+    res.status(400).json(error);
   }
 };
 
@@ -19,41 +19,48 @@ const getChatById = async (req, res) => {
     }
     const userId = new mongoose.Types.ObjectId(req.params.id);
 
-    const chat = await Chat.find({ "participants.userId": userId })
+    const chats = await Chat.find({ "participants.userId": userId })
       .sort({ "lastMessage.timestamp": -1 })
-      .select("-participants._id"); 
-      if (!chat || chat.length === 0) {
-        return res.status(404).json({ message: "Chat non trovata" });
-      }
-      const userIds = chat.map(c => c.participants.find(p => p.userId.toString() !== req.params.id).userId);
+      .lean(); // Per ottimizzare la resituzione dei dati
 
-      const users = await User.find({ _id: { $in: userIds } }).select("image");
-
-      const userImageMap = users.reduce((map, user) => {
-        map[user._id.toString()] = user.image;
-        return map;
-      }, {});
-
-      const otherParticipant = chat.map(c => {
-        const participant = c.participants.find(p => p.userId.toString() !== req.params.id);
-        return {
-          ...participant._doc,
-          image: userImageMap[participant.userId.toString()]
-        };
-      });
-
-      chat.forEach((c, index) => {
-        c._doc.otherParticipant = otherParticipant[index];
-        delete c._doc.participants;
-      });
-      
-    if (!chat || chat.length === 0) {
+    if (!chats.length) {
       return res.status(404).json({ message: "Chat non trovata" });
     }
-    res.status(200).send(chat);
+
+    const userIds = chats
+      .map(
+        (c) =>
+          c.participants.find((p) => p.userId.toString() !== req.params.id)
+            ?.userId
+      )
+      .filter(Boolean);
+
+    const users = await User.find({ _id: { $in: userIds } }).select("image");
+
+    const userImageMap = Object.fromEntries(
+      users.map((user) => [user._id.toString(), user.image])
+    );
+
+    const formattedChats = chats.map((c) => {
+      const participant = c.participants.find(
+        (p) => p.userId.toString() !== req.params.id
+      );
+      return {
+        _id: c._id,
+        lastMessage: c.lastMessage,
+        otherParticipant: {
+          userId: participant.userId,
+          username: participant.username,
+          image:
+            userImageMap[participant.userId.toString()] ||
+            "/uploads/noImage/no-image-profile.webp",
+        },
+      };
+    });
+
+    res.status(200).json(formattedChats);
   } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
+    res.status(500).json({ message: "Errore interno del server" });
   }
 };
 
@@ -66,7 +73,7 @@ const updateChatById = async (req, res) => {
     if (!chat) {
       return res.status(404).send();
     }
-    res.status(200).send(chat);
+    res.status(200).json(chat);
   } catch (error) {
     res.status(400).send(error);
   }

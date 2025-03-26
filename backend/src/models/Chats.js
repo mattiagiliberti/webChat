@@ -39,4 +39,7 @@ const chatSchema = new Schema(
   { collection: "Chats" }
 );
 
+chatSchema.index({ participants: 1 }, { unique: true });
+
+
 module.exports = mongoose.model("Chats", chatSchema);

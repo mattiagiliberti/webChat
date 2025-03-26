@@ -1,6 +1,7 @@
 const Message = require('../models/messageModel');
 const Chat = require('../models/Chats');
 const { createMessageInDB } = require('../services/messageService');
+
 const getAllMessagesByChat = async (req, res) => {
     try {
         const userId = req.user.userId; 
@@ -11,7 +12,7 @@ const getAllMessagesByChat = async (req, res) => {
             return res.status(403).json({ error: "Accesso negato" });
         }
 
-        const messages = await Message.find({chatId: chatId}).select('-__v').sort({createdAt: 1});
+        const messages = await Message.find({chatId: chatId}).select('-__v -status -chatId').sort({createdAt: 1});
         res.status(200).json(messages);
     } catch (error) {
         res.status(500).json({ message: error.message });
