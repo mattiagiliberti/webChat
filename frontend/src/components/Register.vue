@@ -10,7 +10,7 @@
           prepend-inner-icon="mdi-account"
           required
           clearable
-          color="deep-purple-lighten-2"
+          color="deep-purple-darken-1"
         ></v-text-field>
         <v-text-field
           label="Email"
@@ -20,7 +20,7 @@
           :rules="emailRules"
           required
           clearable
-          color="deep-purple-lighten-2"
+          color="deep-purple-darken-1"
         ></v-text-field>
         <v-text-field
           label="Password"
@@ -30,9 +30,9 @@
           prepend-inner-icon="mdi-lock"
           required
           clearable
-          color="deep-purple-lighten-2"
+          color="deep-purple-darken-1"
         ></v-text-field>
-        <v-btn @click="register" color="deep-purple-lighten-2">Register</v-btn>
+        <v-btn @click="register" color="deep-purple-darken-1">Register</v-btn>
         <v-btn @click="goToLogin">Login</v-btn>
       </v-form>
     </v-card>

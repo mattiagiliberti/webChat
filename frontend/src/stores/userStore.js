@@ -5,8 +5,12 @@ export const useUsersStore = defineStore('users', {
     users: []
   }),
   actions: {
-    setUsers(userList) {
-      this.users = userList;
+    setUsers(user) {
+      this.users.push(user);
+    },
+
+    isInChat(userId) {
+      return this.users.some(u => u.userId === userId);
     },
 
     updateUserStatus(userId, status) {

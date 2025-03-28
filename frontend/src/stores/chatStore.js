@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { useSocketStore } from './socketStore';
 import api from '@/services/api';
+import { useUsersStore } from './userStore';
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
@@ -11,6 +12,11 @@ export const useChatStore = defineStore('chat', {
       const response = await api.getChatById(userId);
         if (response.status === 200) {
           this.chats = response.data;
+          const userStore = useUsersStore();
+          this.chats.forEach(chat => {
+            userStore.setUsers(chat.otherParticipant);
+          });
+          localStorage.setItem("users", JSON.stringify(userStore.users));
           localStorage.setItem("chats", JSON.stringify(this.chats));          
         }
     },

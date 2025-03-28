@@ -1,12 +1,20 @@
 <template>
   <v-layout class="rounded rounded-md">
-    <v-app-bar color="primary">
+    <v-app-bar color="deep-purple-darken-1">
       <v-app-bar-nav-icon
         variant="text"
         @click.stop="drawer = !drawer"
       ></v-app-bar-nav-icon>
 
       <!-- Nome della persona che ho cliccato -->
+       <v-avatar>
+        <v-img
+          v-if="activeChat"
+          :src="serverUrl + activeChat.otherParticipant.image"
+        >
+        </v-img>
+      </v-avatar>
+
       <v-toolbar-title v-if="activeChat"@click="openProfile(activeChat.otherParticipant)">
         {{ activeChat.otherParticipant.username }}
       </v-toolbar-title>  
@@ -19,18 +27,21 @@
     <v-navigation-drawer
       v-model="drawer"
       :location="$vuetify.display.mobile ? 'left' : undefined"
-      temporary
+      persistent
     >
     <!-- Barra di ricerca -->
       <v-autocomplete
         v-model="searchQuery"
         :items="searchResults"
+        menu-icon=""
         @update:search="searchUsers"
         placeholder="Cerca utente"
+        prepend-inner-icon="mdi-magnify"
+        rounded
+        variant="solo"
         item-title="username"
         item-value="_id"
         return-object
-        variant="outlined"
         hide-details
         single-line
         no-data-text="Nessun utente trovato"
@@ -109,6 +120,7 @@ export default {
     const authStore = useAuthStore();
     const logout = () => {
       authStore.logout();
+      router.push("/");
     };
 
     const goToProfile = () => {

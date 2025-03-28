@@ -17,7 +17,7 @@
           prepend-icon="mdi-camera"
           @change="onImageChange"
         ></v-file-input>
-        <v-btn @click="uploadImage" color="primary">Carica Immagine</v-btn>
+        <v-btn @click="uploadImage" color="deep-purple-darken-1">Carica Immagine</v-btn>
 
         <v-text-field
           v-model="user.username"
@@ -34,7 +34,7 @@
 
         <v-textarea v-model="user.bio" label="Biografia"></v-textarea>
 
-        <v-btn @click="updateUser" color="primary">Salva Modifiche</v-btn>
+        <v-btn @click="updateUser" color="deep-purple-darken-1">Salva Modifiche</v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -54,7 +54,7 @@
           required
         ></v-text-field>
 
-        <v-btn @click="updatePassword" color="primary">Aggiorna Password</v-btn>
+        <v-btn @click="updatePassword" color="deep-purple-darken-1">Aggiorna Password</v-btn>
       </v-col>
     </v-row>
   </v-container>

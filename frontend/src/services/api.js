@@ -74,5 +74,26 @@ export default {
   async deleteUserProfile (id) {
     const response = await api.delete(`/user/${id}`);
     return response;
+  },
+
+  // Chat API
+  async getAllMessagesByChat (id) {
+    const response = await api.get(`/messages/${id}`);
+    return response;
+  },
+
+  async createMessage (message) {
+    const response = await api.post("/messages", message);
+    return response;
+  },
+
+  async updateMessage (id, message) {
+    const response = await api.put(`/messages/${id}`, message);
+    return response;
+  },
+
+  async deleteMessage (id) {  
+    const response = await api.delete(`/messages/${id}`);
+    return response;
   }
 }

@@ -8,7 +8,7 @@
           :rules="nameRules"
           prepend-inner-icon="mdi-account"
           required
-          color="deep-purple-lighten-2"
+          color="deep-purple-darken-1"
         ></v-text-field>
         <v-text-field
           label="Password"
@@ -18,9 +18,9 @@
           type="password"
           required
           :rules="passwordRules"
-          color="deep-purple-lighten-2"
+          color="deep-purple-darken-1"
         ></v-text-field>
-        <v-btn @click="submit" color="deep-purple-lighten-2">Login</v-btn>
+        <v-btn @click="submit" color="deep-purple-darken-1">Login</v-btn>
         <v-btn @click="register">Register</v-btn>
       </v-form>
     </v-card>
