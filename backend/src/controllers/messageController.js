@@ -12,7 +12,7 @@ const getAllMessagesByChat = async (req, res) => {
             return res.status(403).json({ error: "Accesso negato" });
         }
 
-        const messages = await Message.find({chatId: chatId}).select('-__v -status -chatId').sort({createdAt: 1});
+        const messages = await Message.find({chatId: chatId}).select('-__v -status -chatId').sort({timestamp: 1});
         res.status(200).json(messages);
     } catch (error) {
         res.status(500).json({ message: error.message });
