@@ -9,14 +9,14 @@
       <!-- Nome della persona che ho cliccato -->
        <v-avatar>
         <v-img
-          v-if="activeChat"
-          :src="serverUrl + activeChat.otherParticipant.image"
+          v-if="getActiveChat"
+          :src="serverUrl + getActiveChat.otherParticipant.image"
         >
         </v-img>
       </v-avatar>
 
-      <v-toolbar-title v-if="activeChat"@click="openProfile(activeChat.otherParticipant)">
-        {{ activeChat.otherParticipant.username }}
+      <v-toolbar-title v-if="getActiveChat" @click="openProfile(getActiveChat.otherParticipant)">
+        {{ getActiveChat.otherParticipant.username }}
       </v-toolbar-title>  
 
       <v-spacer></v-spacer>
@@ -28,6 +28,7 @@
       v-model="drawer"
       :location="$vuetify.display.mobile ? 'left' : undefined"
       persistent
+      :width="300"
     >
     <!-- Barra di ricerca -->
       <v-autocomplete
@@ -60,26 +61,7 @@
 
 
       <!-- Lista di persone con chat attiva -->
-      <v-list :items="loadChats">
-        <v-list-item
-          v-for="item in loadChats"
-          :key="item.value"
-          @click="openChat(item)"
-          :prepend-avatar="serverUrl+item.otherParticipant.image"
-          style="margin: 1%;"
-          >
-          <v-list-item-title>
-            {{ item.otherParticipant.username }}
-            <span style="font-size: 12px; color: gray">
-              {{ item.lastMessage.formattedTime }}
-            </span>
-          </v-list-item-title>
-
-          <v-list-item-subtitle>
-            {{ item.lastMessage.senderUser }}: {{ item.lastMessage.text }}
-          </v-list-item-subtitle>
-        </v-list-item>
-      </v-list>
+      <ChatList @close-drawer="drawer = false"/>
 
 
       <v-btn icon @click="logout">
@@ -90,7 +72,7 @@
     <!-- <v-app-bar title="Application bar"></v-app-bar> -->
 
     <v-main class="align-center justify-center">
-      <router-view :active-chat="activeChat" :search-user="searchUser"></router-view>
+      <router-view v-bind="routeProps"></router-view>
     </v-main>
   </v-layout>
 </template>
@@ -98,7 +80,7 @@
 <script>
 import api from "@/services/api";
 import { useRouter } from "vue-router";
-import { formatDate } from "@/utils/date";
+import ChatList from "@/components/ChatList.vue";
 import { useChatStore } from "@/stores/chatStore";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -107,12 +89,14 @@ export default {
     return {
       drawer: false,
       group: null,
-      activeChat: null,
       items: [],
       searchResults: [],
       searchQuery: null,
       searchUser: null,
     };
+  },
+  components:{
+    ChatList,
   },
   setup() {
     const router = useRouter();
@@ -127,21 +111,15 @@ export default {
       router.push("/profile"); 
     };
 
-    return { logout, goToProfile, serverUrl };
+    const chatStore = useChatStore();
+    return { logout, goToProfile, serverUrl, chatStore };
   },
   computed: {
-    formattedMessages() {
-      return this.items.map((msg) => ({
-        ...msg,
-        lastMessage: {
-          ...msg.lastMessage,
-          formattedTime: formatDate(msg.lastMessage.timestamp),
-        },
-      }));
+    getActiveChat(){
+      return this.chatStore.activeChat
     },
-    loadChats(){
-      const chatStore = useChatStore();
-      return chatStore.chats;
+    routeProps() {
+      return this.$route.name === "UserView" ? { searchUser: this.searchUser } : {};
     }
   },
   mounted() {
@@ -153,15 +131,6 @@ export default {
     }
   },
   methods: {
-    openChat(item) {
-      console.log(item);
-      this.drawer = false;
-      this.activeChat = item;
-
-      if (this.$route.path !== "/chats") {
-        this.$router.push("/chats");
-      }
-    },
     openProfile(user) {
       this.searchUser = user;
       if (user._id) {

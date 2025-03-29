@@ -28,7 +28,6 @@ const router = createRouter({
           name: "ChatsView",
           path: '',
           component: ChatsView,
-          props: route => ({ activeChat: route.params.activeChat }),
         },
         {
           name: "ProfileView",

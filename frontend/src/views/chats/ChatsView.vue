@@ -1,8 +1,14 @@
 <template>
   <template v-if="activeChat">
     <v-list class="list-messages">
+      <template v-for="(msgs, date) in groupedMessages" :key="date" >
+        <v-divider></v-divider>
+        <v-list-item class="date-label">
+          <v-chip color="primary">{{ date }}</v-chip>
+        </v-list-item>
+
       <v-list-item
-        v-for="message in messages"
+        v-for="message in msgs"
         :key="message._id"
         class="rounded-lg"
         ref="messageItems"
@@ -22,6 +28,8 @@
           <small>{{ formatDate(message.timestamp) }}</small>
         </div>
       </v-list-item>
+    </template>
+
     </v-list>
     <v-row style="margin: 0.5rem 0 0 0.1rem">
       <v-container class="message-input">
@@ -52,40 +60,48 @@
 <script>
 import api from "@/services/api";
 import { formatDate } from "@/utils/date";
+import { useDate } from "vuetify/lib/framework.mjs";
+import { useChatStore } from "@/stores/chatStore";
 export default {
   name: "ChatsView",
   data() {
     return {
       messages: [],
       message: "",
+      activeChat: null,
     };
   },
-  async mounted() {
+  setup(){
+    const dateMessage = useDate()
+    const chatStore = useChatStore();
+    return { dateMessage, chatStore}
+  },
+  computed:{
+    groupedMessages () {
+      const groups = {};
+      this.messages.forEach(msg => {
+        const dateKey = new Date(msg.timestamp).toLocaleDateString();
+        if (!groups[dateKey]) groups[dateKey] = [];
+        groups[dateKey].push(msg);
+      });
+      return groups;
+    },
+  },
+  mounted() {
     // Recupera le chat salvate in localStorage
     const userString = localStorage.getItem("chats");
     if (userString) {
       const chats = JSON.parse(userString);
       console.log("Chat salvate:", chats);
     }
-  },
-  props: {
-    activeChat: {
-      type: Object,
-      default: null
+    if (this.chatStore.activeChat) {
+      this.laodMessages()
     }
+    
   },
   watch: {
-    async activeChat() {
-      console.log("Caricamento messaggi per la chat:", this.activeChat);
-      this.messages = [];
-      try {
-        const response = await api.getAllMessagesByChat(this.activeChat._id);
-        this.messages = response.data;
-        this.scrollToBottom(); 
-        console.log("Messaggi caricati:", this.messages);
-      } catch (error) {
-          console.error("Errore nel caricamento dei messaggi:", error);
-      }
+    async "chatStore.activeChat"() {
+      this.laodMessages();
     }
   },
   methods:{
@@ -98,11 +114,30 @@ export default {
         }
       });
     },
+    async laodMessages(){      
+      this.activeChat = this.chatStore.activeChat;
+      console.log("Caricamento messaggi per la chat:", this.activeChat);
+      this.messages = [];
+      try {
+        const response = await api.getAllMessagesByChat(this.activeChat._id);
+        this.messages = response.data;
+        this.scrollToBottom(); 
+        console.log("Messaggi caricati:", this.messages);
+      } catch (error) {
+          console.error("Errore nel caricamento dei messaggi:", error);
+      }
+    }
   },
 };
 </script>
 
 <style scoped>
+.date-label {
+  text-align: center;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
 .list-messages {
   display: flex;
   flex: 1;

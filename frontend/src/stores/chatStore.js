@@ -5,7 +5,8 @@ import { useUsersStore } from './userStore';
 
 export const useChatStore = defineStore('chat', {
   state: () => ({
-    chats: [] 
+    chats: [],
+    activeChat: null, 
   }),
   actions: {
     async fetchChats(userId){
