@@ -25,7 +25,9 @@
             }" >
             {{ message.message }}
           </p>
-          <small>{{ formatDate(message.timestamp) }}</small>
+          <small class="message-timestamp">
+            {{ dateMessage.format('message.timestamp', 'fullTime24h') }}
+          </small>
         </div>
       </v-list-item>
     </template>
@@ -158,7 +160,7 @@ export default {
 
 .message-received {
   align-self: flex-start;
-  background-color: #e21818;
+  background-color: #9915fe;
   padding: 10px;
   max-width: 60%;
   text-align: left;

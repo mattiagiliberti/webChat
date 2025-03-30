@@ -4,35 +4,36 @@
       <h1 class="text-center mb-4">Registrazione</h1>
       <v-form ref="form">
         <v-text-field
-          label="Username"
+          label="Username*"
           v-model="username"
           :rules="nameRules"
           prepend-inner-icon="mdi-account"
           required
           clearable
-          color="deep-purple-darken-1"
+          color="deep-purple-accent-4"
         ></v-text-field>
         <v-text-field
-          label="Email"
+          label="Email*"
           v-model="email"
-          prepend-inner-icon="mdi-mail"
+          prepend-inner-icon="mdi-email"
           type="email"
           :rules="emailRules"
           required
           clearable
-          color="deep-purple-darken-1"
+          color="deep-purple-accent-4"
         ></v-text-field>
         <v-text-field
-          label="Password"
+          label="Password*"
           v-model="password"
           type="password"
           :rules="passwordRules"
           prepend-inner-icon="mdi-lock"
           required
           clearable
-          color="deep-purple-darken-1"
+          color="deep-purple-accent-4"
         ></v-text-field>
-        <v-btn @click="register" color="deep-purple-darken-1">Register</v-btn>
+
+        <v-btn @click="register" color="deep-purple-darken-1">Registrati</v-btn>
         <v-btn @click="goToLogin">Login</v-btn>
       </v-form>
     </v-card>

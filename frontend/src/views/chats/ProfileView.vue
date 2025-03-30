@@ -12,27 +12,40 @@
         ></v-img>
         <v-file-input
           v-model="selectedFile"
-          label="Carica Immagine"
+          color="deep-purple-accent-4"
+          label="Scegli l'immagine"
           accept="image/*"
           prepend-icon="mdi-camera"
+          variant="outlined"
           @change="onImageChange"
         ></v-file-input>
+        
+
         <v-btn @click="uploadImage" color="deep-purple-darken-1">Carica Immagine</v-btn>
 
         <v-text-field
           v-model="user.username"
+          color="deep-purple-accent-4"
           label="Username"
+          variant="outlined"
           required
         ></v-text-field>
 
         <v-text-field
           :disabled="true"
           v-model="user.email"
+          color="deep-purple-accent-4"
           label="Email"
+          variant="outlined"
           required
         ></v-text-field>
 
-        <v-textarea v-model="user.bio" label="Biografia"></v-textarea>
+        <v-textarea
+          v-model="user.bio"
+          color="deep-purple-accent-4"
+          label="Biografia"
+          variant="outlined"
+        ></v-textarea>
 
         <v-btn @click="updateUser" color="deep-purple-darken-1">Salva Modifiche</v-btn>
       </v-col>
@@ -42,15 +55,19 @@
         <h2>Cambia Password</h2>
         <v-text-field
           v-model="passwordData.oldPassword"
+          color="deep-purple-accent-4"
           label="Vecchia Password"
           type="password"
+          variant="outlined"
           required
         ></v-text-field>
 
         <v-text-field
           v-model="passwordData.newPassword"
+          color="deep-purple-accent-4"
           label="Nuova Password"
           type="password"
+          variant="outlined"
           required
         ></v-text-field>
 

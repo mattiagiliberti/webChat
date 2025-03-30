@@ -1,27 +1,28 @@
 <template>
   <v-container class="align-center" style="height: 100vh">
-    <v-card class="pa-8" elevation="10" title="Login">
+    <v-card class="pa-8" elevation="10">
+      <h1 class="text-center mb-4">Login</h1>
       <v-form ref="form">
         <v-text-field
-          label="Username"
+          label="Username*"
           v-model="username"
           :rules="nameRules"
           prepend-inner-icon="mdi-account"
           required
-          color="deep-purple-darken-1"
+          color="deep-purple-accent-4"
         ></v-text-field>
         <v-text-field
-          label="Password"
+          label="Password*"
           outlined
           prepend-inner-icon="mdi-lock"
           v-model="password"
           type="password"
           required
           :rules="passwordRules"
-          color="deep-purple-darken-1"
+          color="deep-purple-accent-4"
         ></v-text-field>
         <v-btn @click="submit" color="deep-purple-darken-1">Login</v-btn>
-        <v-btn @click="register">Register</v-btn>
+        <v-btn @click="register">Registrati</v-btn>
       </v-form>
     </v-card>
   </v-container>
