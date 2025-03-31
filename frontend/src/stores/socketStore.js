@@ -35,13 +35,13 @@ export const useSocketStore = defineStore('socket', {
       });
 
       // Ascolta cambi di stato degli utenti
-      this.socket.on('user:online', ({ userId, status }) => {
+      this.socket.on('user:online', ({ userId }) => {
         const usersStore = useUsersStore();
-        usersStore.updateUserStatus(userId, status);
+        usersStore.updateUserStatus(userId, true);
       });
-      this.socket.on('user:offline', ({ userId, status }) => {
+      this.socket.on('user:offline', ({ userId }) => {
         const usersStore = useUsersStore();
-        usersStore.updateUserStatus(userId, status);
+        usersStore.updateUserStatus(userId, false);
       });
 
       // Aggiorna lista alla ricezione di una nuova chat

@@ -51,6 +51,7 @@ export const useChatStore = defineStore('chat', {
 
     resetStore() {
       this.chats = [];
+      this.activeChat = null;
       localStorage.removeItem("chats");
     },
   }

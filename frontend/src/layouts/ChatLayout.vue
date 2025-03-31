@@ -7,17 +7,18 @@
       ></v-app-bar-nav-icon>
 
       <!-- Nome della persona che ho cliccato -->
-       <v-avatar>
-        <v-img
-          v-if="getActiveChat"
-          :src="serverUrl + getActiveChat.otherParticipant.image"
-        >
-        </v-img>
-      </v-avatar>
+      <template v-if="getActiveChat">
+        <v-avatar>
+          <v-img :src="serverUrl + getActiveChat.otherParticipant.image">
+          </v-img>
+        </v-avatar>
 
-      <v-toolbar-title v-if="getActiveChat" @click="openProfile(getActiveChat.otherParticipant)">
-        {{ getActiveChat.otherParticipant.username }}
-      </v-toolbar-title>  
+          <v-app-bar-title @click="openProfile(getActiveChat.otherParticipant)" >
+            {{ getActiveChat.otherParticipant.username }}
+          </v-app-bar-title>
+          <h5 v-if="getActiveChat.otherParticipant.isOnline">Online</h5>
+          <h5 v-else>{{ date.format(getActiveChat.otherParticipant.lastSeen, "keyboardDateTime24h") }}</h5>
+      </template>
 
       <v-spacer></v-spacer>
       <v-btn icon @click="goToProfile">
@@ -30,7 +31,7 @@
       persistent
       :width="300"
     >
-    <!-- Barra di ricerca -->
+      <!-- Barra di ricerca -->
       <v-autocomplete
         v-model="searchQuery"
         :items="searchResults"
@@ -46,23 +47,26 @@
         hide-details
         single-line
         no-data-text="Nessun utente trovato"
+        class="pa-2"
       >
-      <template v-slot:item="{ item, props }">
-        <v-list-item
+        <template v-slot:item="{ item, props }">
+          <v-list-item
             v-bind="props"
-            :prepend-avatar="serverUrl+item.raw.image"
+            :prepend-avatar="serverUrl + item.raw.image"
             :title="item.raw.username"
-            :append-icon="item.raw.isOnline ? 'mdi-checkbox-blank-circle' : 'mdi-checkbox-blank-circle-outline'"
+            :append-icon="
+              item.raw.isOnline
+                ? 'mdi-checkbox-blank-circle'
+                : 'mdi-checkbox-blank-circle-outline'
+            "
             @click="openProfile(item.raw)"
             :color="item.raw.isOnline ? 'green' : 'red'"
           ></v-list-item>
         </template>
       </v-autocomplete>
 
-
       <!-- Lista di persone con chat attiva -->
-      <ChatList @close-drawer="drawer = false"/>
-
+      <ChatList @close-drawer="drawer = false" />
 
       <v-btn icon @click="logout">
         <v-icon>mdi-logout</v-icon>
@@ -83,6 +87,7 @@ import { useRouter } from "vue-router";
 import ChatList from "@/components/ChatList.vue";
 import { useChatStore } from "@/stores/chatStore";
 import { useAuthStore } from "@/stores/authStore";
+import { useDate } from "vuetify/lib/framework.mjs";
 
 export default {
   data() {
@@ -95,24 +100,27 @@ export default {
       searchUser: null,
     };
   },
-  components:{
+  components: {
     ChatList,
   },
   setup() {
     const router = useRouter();
     const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
     const authStore = useAuthStore();
+    const chatStore = useChatStore();
+
+    const date = useDate();
     const logout = () => {
       authStore.logout();
       router.push("/");
     };
 
     const goToProfile = () => {
-      router.push("/profile"); 
+      chatStore.activeChat = null;
+      router.push("/profile");
     };
 
-    const chatStore = useChatStore();
-    return { logout, goToProfile, serverUrl, chatStore };
+    return { logout, goToProfile, serverUrl, chatStore, date };
   },
   computed: {
     getActiveChat(){
@@ -135,6 +143,7 @@ export default {
       this.searchUser = user;
       if (user._id) {
         this.$router.push(`/user/${user._id}`);
+        this.chatStore.activeChat = null
       } else {
         this.$router.push(`/user/${user.userId}`);
       }

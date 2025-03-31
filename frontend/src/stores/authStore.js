@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { useSocketStore } from "./socketStore";
 import api from "@/services/api";
 import { useChatStore } from "./chatStore";
+import { useUsersStore } from "./userStore";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
@@ -35,6 +36,7 @@ export const useAuthStore = defineStore("auth", {
       this.user = null;
       this.token = null;
       useSocketStore().disconnectSocket()
+      useUsersStore().resetStore();
       useChatStore().resetStore();
     },
   },

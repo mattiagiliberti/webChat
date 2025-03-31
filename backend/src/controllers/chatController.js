@@ -21,45 +21,46 @@ const getChatById = async (req, res) => {
 
     const chats = await Chat.find({ "participants.userId": userId })
       .sort({ "lastMessage.timestamp": -1 })
-      .lean(); // Per ottimizzare la resituzione dei dati
+      .lean();
 
     if (!chats.length) {
       return res.status(404).json({ message: "Chat non trovata" });
     }
 
     const userIds = chats
-      .map(
-        (c) =>
-          c.participants.find((p) => p.userId.toString() !== req.params.id)
-            ?.userId
+      .map((chat) =>
+        chat.participants.find((p) => !p.userId.equals(userId))?.userId
       )
       .filter(Boolean);
 
-    const users = await User.find({ _id: { $in: userIds } }).select("image");
-
-    const userImageMap = Object.fromEntries(
-      users.map((user) => [user._id.toString(), user.image])
+    const users = await User.find({ _id: { $in: userIds } }).select(
+      "username image lastSeen isOnline"
     );
 
-    const formattedChats = chats.map((c) => {
-      const participant = c.participants.find(
-        (p) => p.userId.toString() !== req.params.id
-      );
+    const userMap = Object.fromEntries(
+      users.map((user) => [user._id.toString(), user])
+    );
+
+    const formattedChats = chats.map((chat) => {
+      const participant = chat.participants.find((p) => !p.userId.equals(userId));
+      const userData = userMap[participant.userId.toString()] || {};
+
       return {
-        _id: c._id,
-        lastMessage: c.lastMessage,
+        _id: chat._id,
+        lastMessage: chat.lastMessage,
         otherParticipant: {
           userId: participant.userId,
-          username: participant.username,
-          image:
-            userImageMap[participant.userId.toString()] ||
-            "/uploads/noImage/no-image-profile.webp",
+          username: userData.username || "Utente sconosciuto",
+          image: userData.image || "/uploads/noImage/no-image-profile.webp",
+          lastSeen: userData.lastSeen || null,
+          isOnline: userData.isOnline || false,
         },
       };
     });
 
     res.status(200).json(formattedChats);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Errore interno del server" });
   }
 };

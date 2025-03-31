@@ -24,7 +24,7 @@
         </template>
         <template v-else>
           <v-list-item-subtitle class="text-high-emphasis truncate-text"
-            >{{ item.lastMessage.username }}:
+            >{{ item.lastMessage.senderUser }}:
             {{ item.lastMessage.text }}</v-list-item-subtitle
           >
         </template>

@@ -103,6 +103,8 @@ export default {
   },
   watch: {
     async "chatStore.activeChat"() {
+      console.log("activechat: "+this.chatStore.activeChat);
+      
       this.laodMessages();
     }
   },
@@ -116,7 +118,7 @@ export default {
         }
       });
     },
-    async laodMessages(){      
+    async laodMessages(){            
       this.activeChat = this.chatStore.activeChat;
       console.log("Caricamento messaggi per la chat:", this.activeChat);
       this.messages = [];
@@ -170,4 +172,11 @@ export default {
   width: 100%;
   padding: 0;
 }
+</style>
+
+<style>
+  .v-input__append{
+    padding: 0.6rem !important;
+    margin: 0 !important;
+  }
 </style>
