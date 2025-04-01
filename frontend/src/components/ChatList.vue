@@ -14,7 +14,7 @@
         }}</v-list-item-subtitle>
         <template v-if="!item.lastMessage.text">
           <v-list-item-subtitle class="text-high-emphasis truncate-text" style="font-style: italic"
-            >Nessun messaggio presente</v-list-item-subtitle
+            >Inizia la chat</v-list-item-subtitle
           >
         </template>
         <template v-else-if="item.lastMessage.senderId == userId">

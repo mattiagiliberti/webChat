@@ -3,29 +3,33 @@
     <h1>Modifica Profilo</h1>
     <v-row>
       <v-col cols="12">
-        <v-img
+        <v-avatar size="100" class="profile-avatar">
+          <v-img
           v-if="user.image"
           :src="serverUrl + user.image"
-          width="100"
-          height="100"
-          style="border-radius: 50%"
-        ></v-img>
+          class="profile-img-container"
+          />
+        </v-avatar>
+        
         <v-file-input
           v-model="selectedFile"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
           label="Scegli l'immagine"
           accept="image/*"
           prepend-icon="mdi-camera"
           variant="outlined"
           @change="onImageChange"
         ></v-file-input>
-        
 
         <v-btn @click="uploadImage" color="deep-purple-darken-1">Carica Immagine</v-btn>
-
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <h2>Modifica Info</h2>
         <v-text-field
           v-model="user.username"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
           label="Username"
           variant="outlined"
           required
@@ -34,7 +38,7 @@
         <v-text-field
           :disabled="true"
           v-model="user.email"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
           label="Email"
           variant="outlined"
           required
@@ -42,7 +46,7 @@
 
         <v-textarea
           v-model="user.bio"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
           label="Biografia"
           variant="outlined"
         ></v-textarea>
@@ -55,7 +59,7 @@
         <h2>Cambia Password</h2>
         <v-text-field
           v-model="passwordData.oldPassword"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
           label="Vecchia Password"
           type="password"
           variant="outlined"
@@ -64,7 +68,7 @@
 
         <v-text-field
           v-model="passwordData.newPassword"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
           label="Nuova Password"
           type="password"
           variant="outlined"
@@ -72,6 +76,23 @@
         ></v-text-field>
 
         <v-btn @click="updatePassword" color="deep-purple-darken-1">Aggiorna Password</v-btn>
+        <v-snackbar
+          v-model="snackbar"
+          multi-line
+        >
+          {{ text }}
+
+          <template v-slot:actions>
+            <v-btn
+              color="red"
+              variant="text"
+              @click="snackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
+
       </v-col>
     </v-row>
   </v-container>
@@ -94,6 +115,8 @@ export default {
         newPassword: "",
       },
       selectedFile: null,
+      snackbar: false,
+      text: "",
     };
   },
   setup() {
@@ -116,8 +139,14 @@ export default {
     },
     async updatePassword() {
       const userId = localStorage.getItem("userId");
-      await api.updatePasswordProfile(userId, this.passwordData);
-      alert("Password aggiornata con successo!");
+      try{
+        await api.updatePasswordProfile(userId, this.passwordData);
+        alert("Password aggiornata con successo!");
+      } catch (error){
+        this.text = "La vecchia password non è corretta. Riprova!";
+        this.snackbar = true;
+      }
+      
     },
     onImageChange(event) {
       this.selectedFile = event.target.files[0];
@@ -144,6 +173,17 @@ export default {
 </script>
 
 <style scoped>
+.profile-avatar {
+  margin-bottom: 15px; 
+}
+
+.profile-img-container {
+  height: 100px;
+  border-radius: 50%;
+  width: 100px;
+  border: 3px solid #6200ea;
+}
+
 .profile-edit {
   max-width: 500px;
   margin: auto;

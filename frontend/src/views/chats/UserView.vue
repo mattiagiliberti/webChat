@@ -43,7 +43,7 @@
       </v-card-item>
     
       <v-card-actions class="align-end" v-if="!userInChat">
-        <v-btn @click="chatWithUser" color="deep-purple-darken-1">Inizia la chat</v-btn>
+        <v-btn @click="chatWithUser" color="deep-purple-lighten-2" variant="outlined">Inizia la chat</v-btn>
       </v-card-actions>
     <!-- </div> -->
     </v-card-text>

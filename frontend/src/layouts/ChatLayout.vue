@@ -9,16 +9,24 @@
       <!-- Nome della persona che ho cliccato -->
       <template v-if="getActiveChat">
         <v-avatar>
-          <v-img :src="serverUrl + getActiveChat.otherParticipant.image">
-          </v-img>
+          <v-img :src="serverUrl + getActiveChat.otherParticipant.image"></v-img>
         </v-avatar>
 
-          <v-app-bar-title @click="openProfile(getActiveChat.otherParticipant)" >
-            {{ getActiveChat.otherParticipant.username }}
+        <div class="d-flex flex-column ml-3">
+          <v-app-bar-title @click="openProfile(getActiveChat.otherParticipant)">
+            <h3>{{ getActiveChat.otherParticipant.username }}</h3>
           </v-app-bar-title>
-          <h5 v-if="getActiveChat.otherParticipant.isOnline">Online</h5>
-          <h5 v-else>{{ date.format(getActiveChat.otherParticipant.lastSeen, "keyboardDateTime24h") }}</h5>
+
+          <div v-if="getActiveChat.otherParticipant.isOnline">Online</div>
+
+          <div v-else class="scrolling-container">
+            <div class="scrolling-text">
+              Ultimo accesso: {{ date.format(getActiveChat.otherParticipant.lastSeen, "fullDateTime24h") }}
+            </div>
+          </div>
+        </div>
       </template>
+
 
       <v-spacer></v-spacer>
       <v-btn icon @click="goToProfile">
@@ -165,3 +173,30 @@ export default {
   },
 };
 </script>
+
+
+<style scoped>
+.scrolling-container {
+  width: 220px;
+  overflow: hidden;
+  position: relative;
+  height: 20px;
+}
+
+.scrolling-text {
+  position: absolute;
+  white-space: nowrap;
+  animation: scrollText 6s linear infinite;
+}
+
+@keyframes scrollText {
+  0% {
+    transform: translateX(100%); 
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+
+</style>

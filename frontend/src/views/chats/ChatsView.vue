@@ -4,7 +4,7 @@
       <template v-for="(msgs, date) in groupedMessages" :key="date" >
         <v-divider></v-divider>
         <v-list-item class="date-label">
-          <v-chip color="primary">{{ date }}</v-chip>
+          <v-chip color="grey-lighten-1">{{ date }}</v-chip>
         </v-list-item>
 
       <v-list-item
@@ -153,7 +153,7 @@ export default {
 
 .message-sent {
   align-self: flex-end;
-  background-color: #4caf50;
+  background-color: #7E57C2;
   color: white;
   padding: 10px;
   border-radius: 10px;
@@ -162,7 +162,7 @@ export default {
 
 .message-received {
   align-self: flex-start;
-  background-color: #9915fe;
+  background-color: #424242;
   padding: 10px;
   max-width: 60%;
   text-align: left;

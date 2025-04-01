@@ -4,24 +4,40 @@
       <h1 class="text-center mb-4">Login</h1>
       <v-form ref="form">
         <v-text-field
-          label="Username*"
+          label="Username"
           v-model="username"
           :rules="nameRules"
           prepend-inner-icon="mdi-account"
           required
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
         ></v-text-field>
         <v-text-field
-          label="Password*"
+          label="Password"
           outlined
           prepend-inner-icon="mdi-lock"
           v-model="password"
           type="password"
           required
           :rules="passwordRules"
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
         ></v-text-field>
         <v-btn @click="submit" color="deep-purple-darken-1">Login</v-btn>
+        <v-snackbar
+          v-model="snackbar"
+          multi-line
+        >
+          {{ text }}
+
+          <template v-slot:actions>
+            <v-btn
+              color="red"
+              variant="text"
+              @click="snackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
         <v-btn @click="register">Registrati</v-btn>
       </v-form>
     </v-card>
@@ -47,6 +63,8 @@ export default {
       passwordRules: [
         (v) => v.length >= 3 || "Password deve essere avere almeno 8 caratteri",
       ],
+      snackbar: false,
+      text: "",
     };
   },
   setup() {
@@ -67,6 +85,8 @@ export default {
           });
           if (!response.success) {
             console.log(response.message);
+            this.text = "Credenziali errate. Riprova!";
+            this.snackbar = true;
             
           }else{
             this.router.push("/chats")

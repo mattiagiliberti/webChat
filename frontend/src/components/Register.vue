@@ -4,36 +4,52 @@
       <h1 class="text-center mb-4">Registrazione</h1>
       <v-form ref="form">
         <v-text-field
-          label="Username*"
+          label="Username"
           v-model="username"
           :rules="nameRules"
           prepend-inner-icon="mdi-account"
           required
           clearable
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
         ></v-text-field>
         <v-text-field
-          label="Email*"
+          label="Email"
           v-model="email"
           prepend-inner-icon="mdi-email"
           type="email"
           :rules="emailRules"
           required
           clearable
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
         ></v-text-field>
         <v-text-field
-          label="Password*"
+          label="Password"
           v-model="password"
           type="password"
           :rules="passwordRules"
           prepend-inner-icon="mdi-lock"
           required
           clearable
-          color="deep-purple-accent-4"
+          color="deep-purple-lighten-2"
         ></v-text-field>
 
         <v-btn @click="register" color="deep-purple-darken-1">Registrati</v-btn>
+        <v-snackbar
+          v-model="snackbar"
+          multi-line
+        >
+          {{ text }}
+
+          <template v-slot:actions>
+            <v-btn
+              color="red"
+              variant="text"
+              @click="snackbar = false"
+            >
+              Close
+            </v-btn>
+          </template>
+        </v-snackbar>
         <v-btn @click="goToLogin">Login</v-btn>
       </v-form>
     </v-card>
@@ -66,6 +82,8 @@ export default {
           (this.pattern.test(v)) ||
           "Email non valida",
       ],
+      snackbar: false,
+      text: "",
     };
   },
   methods: {
@@ -84,7 +102,8 @@ export default {
           }
         })
         .catch((error) => {
-          console.log(error);
+          this.text = "Campi di iscrizione non rispettati. Riprova!";
+          this.snackbar = true;
         });
     },
     goToLogin() {
