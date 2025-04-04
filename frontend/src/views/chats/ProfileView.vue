@@ -28,6 +28,7 @@
       <v-col cols="12">
         <h2>Modifica Info</h2>
         <v-text-field
+          :disabled="true"
           v-model="user.username"
           color="deep-purple-lighten-2"
           label="Username"
@@ -134,16 +135,18 @@ export default {
     async updateUser() {
       const userId = localStorage.getItem("userId");
       await api.updateUserProfile(userId, this.user).then((response) => {
-        alert("Profilo aggiornato con successo!");
+        this.text = ("Profilo aggiornato con successo!");
+        this.snackbar = true;
       });
     },
     async updatePassword() {
       const userId = localStorage.getItem("userId");
       try{
         await api.updatePasswordProfile(userId, this.passwordData);
-        alert("Password aggiornata con successo!");
+        this.text = ("Password aggiornata con successo!");
+        this.snackbar = true;
       } catch (error){
-        this.text = "La vecchia password non è corretta. Riprova!";
+        this.text = error.response.data.message;
         this.snackbar = true;
       }
       
@@ -154,7 +157,8 @@ export default {
     async uploadImage() {
       const userId = localStorage.getItem("userId");
       if (!this.selectedFile) {
-        alert("Seleziona un'immagine prima di caricare.");
+        this.text = ("Seleziona un'immagine prima di caricare.");
+        this.snackbar = true;
         return;
       }
 
@@ -162,10 +166,13 @@ export default {
 
       try {
         api.updateUserProfile(userId, this.user).then((response) => {
-          console.log("Immagine aggiornata con successo:", response);
+          this.text = response.data;
+          this.snackbar = true;
         });
       } catch (error) {
-        console.log("Errore nel caricamento dell'immagine", error);
+          console.log("Errore nel caricamento dell'immagine", error);
+          this.text = error.response.data.message;
+          this.snackbar = true;
       }
     },
   },

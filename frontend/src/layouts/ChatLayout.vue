@@ -76,9 +76,13 @@
       <!-- Lista di persone con chat attiva -->
       <ChatList @close-drawer="drawer = false" />
 
-      <v-btn icon @click="logout">
-        <v-icon>mdi-logout</v-icon>
-      </v-btn>
+      
+      <v-container class="mt-auto d-flex justify-center pa-4">
+        <v-btn color="deep-purple-darken-1" @click="logout" block>
+          <v-icon left>mdi-logout</v-icon>
+          Logout
+        </v-btn>
+      </v-container>
     </v-navigation-drawer>
 
     <!-- <v-app-bar title="Application bar"></v-app-bar> -->

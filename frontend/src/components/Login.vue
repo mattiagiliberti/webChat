@@ -1,7 +1,7 @@
 <template>
   <v-container class="align-center" style="height: 100vh">
     <v-card class="pa-8" elevation="10">
-      <h1 class="text-center mb-4">Login</h1>
+      <h1 class="text-center mb-4" style="font-family: 'Lucida Console', Monaco, monospace;">Login</h1>
       <v-form ref="form">
         <v-text-field
           label="Username"
@@ -85,7 +85,7 @@ export default {
           });
           if (!response.success) {
             console.log(response.message);
-            this.text = "Credenziali errate. Riprova!";
+            this.text = response.message;
             this.snackbar = true;
             
           }else{
@@ -93,6 +93,8 @@ export default {
           }
         } catch (error) {
           console.error("Errore di login:", error.message);
+          this.text = error.message;
+          this.snackbar = true;
         }
       }
     },

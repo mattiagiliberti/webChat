@@ -1,62 +1,67 @@
 <template>
-  <template v-if="activeChat">
-    <v-list class="list-messages">
-      <template v-for="(msgs, date) in groupedMessages" :key="date" >
-        <v-divider></v-divider>
-        <v-list-item class="date-label">
-          <v-chip color="grey-lighten-1">{{ date }}</v-chip>
-        </v-list-item>
+  <v-app>
+    <v-main class="bg-grey-darken-4 text-white">
+      <div>
+        <template v-if="activeChat">
+          <v-list class="list-messages">
+            <template v-for="(msgs, date) in groupedMessages" :key="date" >
+              <v-divider></v-divider>
+              <v-list-item class="date-label">
+                <v-chip color="grey-lighten-1">{{ date }}</v-chip>
+              </v-list-item>
 
-      <v-list-item
-        v-for="message in msgs"
-        :key="message._id"
-        class="rounded-lg"
-        ref="messageItems"
-        :class="{
-          'message-sent':
-            message.senderId !== activeChat.otherParticipant.userId,
-          'message-received':
-            message.senderId === activeChat.otherParticipant.userId,
-        }"
-      >
-        <div>
-          <p :class="{
-              sent: message.senderId !== activeChat.otherParticipant.userId,
-            }" >
-            {{ message.message }}
-          </p>
-          <small class="message-timestamp">
-            {{ dateMessage.format('message.timestamp', 'fullTime24h') }}
-          </small>
+            <v-list-item
+              v-for="message in msgs"
+              :key="message._id"
+              class="rounded-lg"
+              ref="messageItems"
+              :class="{
+                'message-sent':
+                  message.senderId !== activeChat.otherParticipant.userId,
+                'message-received':
+                  message.senderId === activeChat.otherParticipant.userId,
+              }"
+            >
+              <div>
+                <p :class="{
+                    sent: message.senderId !== activeChat.otherParticipant.userId,
+                  }" >
+                  {{ message.message }}
+                </p>
+                <small class="message-timestamp">
+                  {{ dateMessage.format('message.timestamp', 'fullTime24h') }}
+                </small>
+              </div>
+            </v-list-item>
+          </template>
+
+          </v-list>
+          <v-row style="margin: 0.5rem 0 0 0.1rem">
+            <v-container class="message-input">
+              <v-textarea
+                v-model="message"
+                :append-icon="message ? 'mdi-send' : 'mdi-microphone'"
+                clear-icon="mdi-close-circle"
+                label="Message"
+                type="text"
+                variant="solo"
+                clearable
+                rows="1"
+                max-rows="2"
+                auto-grow
+                class="overflow-y-auto rounded-lg"
+              ></v-textarea>
+            </v-container>
+          </v-row>
+        </template>
+        <div v-else class="message-home" font="Arial">
+          <div class="bg"></div>
+          <h1>Let's chat!</h1>
+          <div class="flip"></div>
         </div>
-      </v-list-item>
-    </template>
-
-    </v-list>
-    <v-row style="margin: 0.5rem 0 0 0.1rem">
-      <v-container class="message-input">
-        <v-textarea
-          v-model="message"
-          :append-icon="message ? 'mdi-send' : 'mdi-microphone'"
-          clear-icon="mdi-close-circle"
-          label="Message"
-          type="text"
-          variant="solo"
-          clearable
-          rows="1"
-          max-rows="2"
-          auto-grow
-          class="overflow-y-auto rounded-lg"
-        ></v-textarea>
-      </v-container>
-    </v-row>
-  </template>
-  <div v-else>
-    <h1>
-      Benvenuto nell'app di messaggistica! Seleziona una chat per iniziare a
-      chattare.
-    </h1>
-  </div>
+      </div>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
@@ -171,6 +176,71 @@ export default {
 .message-input {
   width: 100%;
   padding: 0;
+}
+
+.message-home {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 300px;
+  height: 100px;
+  border-radius: 18px;
+  background-color: #7E57C2;
+  color: white;
+  font-family: 'Lucida Console', Monaco, monospace;
+}
+
+.flip {
+  position: absolute;
+  bottom: -10px;
+  left: 0px;
+  width: 15px;
+  height: 30px;
+  background-color: #7E57C2;
+  border-radius: 0px 0px 30px 0px;
+}
+
+.bg {
+  width: 50px;
+  height: 25px;
+  position: absolute;
+  left: -100px;
+  border-radius: 30%;
+  top: -90px;
+  box-shadow: 
+    400px 100px 0 0 rgba(255, 255, 255,.15),
+    50px 150px 0 0 rgba(255, 255, 255,.15),
+    450px 180px 0 0 rgba(255, 255, 255,.15),
+    10px 50px 0 0 rgba(255, 255, 255,.15),
+    300px 10px 0 0 rgba(255, 255, 255,.15),
+    200px 220px 0 0 rgba(255, 255, 255,.15);
+  animation: bgAnim 3s infinite alternate;
+}
+
+@keyframes bgAnim {
+  from {
+    box-shadow: 
+    400px 100px 0 0 rgba(255, 255, 255,.15),
+    50px 150px 0 0 rgba(255, 255, 255,.15),
+    450px 180px 0 0 rgba(255, 255, 255,.15),
+    10px 50px 0 0 rgba(255, 255, 255,.15),
+    300px 10px 0 0 rgba(255, 255, 255,.15),
+    200px 220px 0 0 rgba(255, 255, 255,.15);
+  }
+  to {
+    box-shadow: 
+    450px 100px 0 0 rgba(255, 255, 255,.15),
+    0px 150px 0 0 rgba(255, 255, 255,.15),
+    500px 180px 0 0 rgba(255, 255, 255,.15),
+    60px 50px 0 0 rgba(255, 255, 255,.15),
+    250px 10px 0 0 rgba(255, 255, 255,.15),
+    150px 220px 0 0 rgba(255, 255, 255,.15);
+  }
 }
 </style>
 

@@ -34,12 +34,12 @@ const login = async (req, res) => {
 
         const user = await User.findOne({ username }).select("-lastSeen -isOnline -createdAt -__v");
         
-        if (!user) return res.status(400).json({ message: "Credenziali non valide" });
+        if (!user) return res.status(400).json({ message: "Credenziali non valide. Riprova!" });
         console.log("eccomi");
 
         // Verifica la password
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: "Credenziali non valide" });
+        if (!isMatch) return res.status(400).json({ message: "Credenziali non valide. Riprova!" });
 
         // Genera token JWT
         const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "7d" });

@@ -2,7 +2,7 @@
   <v-container>
     <v-row class="justify-center">
       <v-col xl="12" md="10" sm="12" cols="12" class="d-flex justify-center text-center">
-        <h1>Benvenuti nell'app di messaggistica</h1>
+        <h1 style="font-family: 'Lucida Console', Monaco, monospace;">Benvenuti nell'app di messaggistica</h1>
       </v-col>
     </v-row>
     <v-row class="justify-center">

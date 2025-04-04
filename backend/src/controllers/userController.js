@@ -56,7 +56,7 @@ const updateUserProfile = async (req, res) => {
             if (!updatedUser) {
                 return res.status(500).json({ message: 'Errore' });
             }
-            res.status(200).send("Profilo aggiornato con successo");
+            res.status(200).send("Immagine profilo aggiornato con successo");
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
@@ -73,7 +73,7 @@ const updatePasswordProfile = async (req, res) => {
                 
         const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
 
-        if (!isMatch) return res.status(400).json({ message: "Password non corrispondono" });
+        if (!isMatch) return res.status(400).json({ message: "La vecchia password non è corretta. Riprova!" });
         user.password = await bcrypt.hash(req.body.newPassword, 10);
 
         const updatedUser = await user.save();

@@ -1,7 +1,7 @@
 <template>
   <v-container class="" style="height: 100vh">
     <v-card class="pa-8" elevation="10">
-      <h1 class="text-center mb-4">Registrazione</h1>
+      <h1 class="text-center mb-4" style="font-family: 'Lucida Console', Monaco, monospace;">Registrazione</h1>
       <v-form ref="form">
         <v-text-field
           label="Username"
@@ -97,12 +97,17 @@ export default {
         })
         .then((response) => {
           if (response.status === 201) {
-            alert(response.data.message);
+            this.text(response.data.message);
+            this.snackbar = true;
             this.$router.push("/");
+          } else {
+            this.text(response.data.message);
+            this.snackbar = true;
           }
         })
         .catch((error) => {
-          this.text = "Campi di iscrizione non rispettati. Riprova!";
+          console.log(error);
+          this.text = error.response.data.message;
           this.snackbar = true;
         });
     },
