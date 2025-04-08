@@ -1,8 +1,6 @@
 <template>
-  <v-app>
-    <v-main class="bg-grey-darken-4 text-white">
-      <div>
-        <template v-if="activeChat">
+  <div>
+    <template v-if="activeChat">
           <v-list class="list-messages">
             <template v-for="(msgs, date) in groupedMessages" :key="date" >
               <v-divider></v-divider>
@@ -36,13 +34,14 @@
           </template>
 
           </v-list>
-          <v-row style="margin: 0.5rem 0 0 0.1rem">
+          <v-row style="margin: 0.5rem 0 0 0.1rem; height: 10vh;"
+          class="d-flex flex-row align-center pl-2">
             <v-container class="message-input">
               <v-textarea
                 v-model="message"
                 :append-icon="message ? 'mdi-send' : 'mdi-microphone'"
                 clear-icon="mdi-close-circle"
-                label="Message"
+                placeholder="Messaggio..."
                 type="text"
                 variant="solo"
                 clearable
@@ -60,8 +59,6 @@
           <div class="flip"></div>
         </div>
       </div>
-    </v-main>
-  </v-app>
 </template>
 
 <script>

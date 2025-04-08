@@ -3,37 +3,16 @@
     <v-card class="pa-8" elevation="10">
       <h1 class="text-center mb-4" style="font-family: 'Lucida Console', Monaco, monospace;">Login</h1>
       <v-form ref="form">
-        <v-text-field
-          label="Username"
-          v-model="username"
-          :rules="nameRules"
-          prepend-inner-icon="mdi-account"
-          required
-          color="deep-purple-lighten-2"
-        ></v-text-field>
-        <v-text-field
-          label="Password"
-          outlined
-          prepend-inner-icon="mdi-lock"
-          v-model="password"
-          type="password"
-          required
-          :rules="passwordRules"
-          color="deep-purple-lighten-2"
-        ></v-text-field>
+        <v-text-field label="Username" v-model="username" :rules="nameRules" prepend-inner-icon="mdi-account" required
+          color="deep-purple-lighten-2"></v-text-field>
+        <v-text-field label="Password" outlined prepend-inner-icon="mdi-lock" v-model="password" type="password"
+          required :rules="passwordRules" color="deep-purple-lighten-2"></v-text-field>
         <v-btn @click="submit" color="deep-purple-darken-1">Login</v-btn>
-        <v-snackbar
-          v-model="snackbar"
-          multi-line
-        >
+        <v-snackbar v-model="snackbar" multi-line>
           {{ text }}
 
           <template v-slot:actions>
-            <v-btn
-              color="red"
-              variant="text"
-              @click="snackbar = false"
-            >
+            <v-btn color="red" variant="text" @click="snackbar = false">
               Close
             </v-btn>
           </template>
@@ -42,6 +21,7 @@
       </v-form>
     </v-card>
   </v-container>
+
 </template>
 
 <script>
@@ -87,8 +67,8 @@ export default {
             console.log(response.message);
             this.text = response.message;
             this.snackbar = true;
-            
-          }else{
+
+          } else {
             this.router.push("/chats")
           }
         } catch (error) {
@@ -105,3 +85,26 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.spacer {
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.layer {
+  background-image: url("@/assets/waves.svg");
+}
+</style>

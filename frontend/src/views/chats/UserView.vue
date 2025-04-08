@@ -1,8 +1,7 @@
 <template>
-  <v-card class="mx-auto" style="height: 100vh">
-    <v-card-text>
+  <v-card class="mx-auto" style="height: 100%">
       <v-card-item>
-          <template v-slot:title>
+          <template v-slot:prepend>
             <v-icon
               :icon="
                 user.isOnline
@@ -11,8 +10,10 @@
               "
               :color="user.isOnline ? 'green' : 'red'"
             ></v-icon>
-            {{ user.username }}
           </template>
+          <v-card-title>
+            {{ user.username }}
+          </v-card-title>
         </v-card-item>
       <v-img
         v-if="user.image"
@@ -38,20 +39,30 @@
         <template v-slot:subtitle>
           <v-icon icon="mdi-calendar-clock"></v-icon>
           Data di creazione
-          <v-card-text>{{ formatDate(user.createdAt) }}</v-card-text>
+          <v-card-text>{{ date.format(user.createdAt, "fullDate") }}</v-card-text>
         </template>
       </v-card-item>
-    
+
+      <v-divider></v-divider>
+
+      <v-card-item>
+        <template v-slot:subtitle>
+          <v-icon icon="mdi-calendar-clock"></v-icon>
+          Ultimo accesso
+          <v-card-text>{{ date.format(user.lastSeen, "fullDateTime24h") }}</v-card-text>
+        </template>
+      </v-card-item>
+
       <v-card-actions class="align-end" v-if="!userInChat">
         <v-btn @click="chatWithUser" color="deep-purple-lighten-2" variant="outlined">Inizia la chat</v-btn>
       </v-card-actions>
     <!-- </div> -->
-    </v-card-text>
   </v-card>
 </template>
 
 <script>
 import api from "@/services/api";
+import { useDate } from "vuetify/lib/framework.mjs";
 import { formatDate } from "@/utils/date";
 import { useChatStore } from "@/stores/chatStore";
 import { useUsersStore } from "@/stores/userStore";
@@ -65,7 +76,8 @@ export default {
   },
   setup() {
     const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
-    return { serverUrl };
+    const date = useDate();
+    return { serverUrl, date };
   },
   async mounted() {
     const userid = this.$route.params.id;

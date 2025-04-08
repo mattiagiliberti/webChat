@@ -19,5 +19,6 @@ export default createVuetify({
         it: 'it-IT',
       },
     },
+    locale: 'it'
   },
 });
