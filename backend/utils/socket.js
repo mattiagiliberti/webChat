@@ -33,6 +33,7 @@ module.exports = (server) => {
     // Invio di un messaggio privato
     socket.on("message:send", async ({ senderId, receiverId, message, chatId, senderUser }) => {
         const receiverSocketId = connectedUsers.get(receiverId);
+        const senderSocketId = connectedUsers.get(senderId);
         console.log(`Messaggio privato da ${senderId} a ${receiverId}: ${message}` );
 
         try {
@@ -43,13 +44,15 @@ module.exports = (server) => {
                 message: message,
                 senderUser: senderUser
             });
+            console.log(newMessage);
+            
             console.log(`Messaggio salvato nel database`);
+            io.to(senderSocketId).emit("message:receive", newMessage);
+            if (receiverSocketId) {
+              io.to(receiverSocketId).emit("message:receive", newMessage);
+            }
         } catch (error) {
           console.log(error);
-        }
-
-        if (receiverSocketId) {
-          io.to(receiverSocketId).emit("message:recieve", { senderId, message });
         }
       }
     );

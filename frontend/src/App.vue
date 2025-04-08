@@ -3,7 +3,7 @@
   <v-app style="min-height: 100vh; margin: 0; padding: 0"
   :class="{
     'background spacer layer':
-      (!isAuthenticated)
+    !authStore.isAuthenticated
   }">
   <RouterView />
   </v-app>
@@ -12,12 +12,12 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
 import { useSocketStore } from './stores/socketStore';
+import { useAuthStore } from './stores/authStore';
 export default {
   name: 'App',
-  computed: {
-    isAuthenticated() {
-      return localStorage.getItem('token');
-    },
+  setup(){
+    const authStore = useAuthStore();    
+    return { authStore }
   },
   mounted(){
     const socketStore = useSocketStore();

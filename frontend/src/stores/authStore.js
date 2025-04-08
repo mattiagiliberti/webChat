@@ -6,8 +6,11 @@ import { useUsersStore } from "./userStore";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null,
-    token: null,
+    token: localStorage.getItem("token") || null,
   }),
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+  },
   actions: {
     async login(credentials) {
       try {
