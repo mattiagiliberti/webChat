@@ -27,7 +27,7 @@
                   {{ message.message }}
                 </p>
                 <small class="message-timestamp">
-                  {{ dateMessage.format('message.timestamp', 'fullTime24h') }}
+                  {{ dateMessage.format(message.timestamp, 'fullTime24h') }}
                 </small>
               </div>
             </v-list-item>
@@ -44,7 +44,6 @@
                 placeholder="Messaggio..."
                 type="text"
                 variant="solo"
-                clearable
                 rows="1"
                 max-rows="2"
                 auto-grow

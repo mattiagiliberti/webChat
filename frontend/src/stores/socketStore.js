@@ -15,7 +15,9 @@ export const useSocketStore = defineStore('socket', {
       if (this.socket) return; 
 
       this.socket = io(serverUrl, {
-        query: { userId }
+        auth: {
+          token: localStorage.getItem('token'),
+        }
       });
 
       this.socket.on('connect', () => {
@@ -48,6 +50,10 @@ export const useSocketStore = defineStore('socket', {
       this.socket.on("chat:update", (to) => {
         console.log("Nuova chat ricevuta");
         useChatStore().fetchChats(to);
+      });
+
+      this.socket.on("connect_error", (err) => {
+        alert(err.message);
       });
     },
 
