@@ -31,9 +31,10 @@ export const useSocketStore = defineStore('socket', {
       });
 
       // Ascolta nuovi messaggi e aggiornali nello store della chat
-      this.socket.on('new_message', (message) => {
+      this.socket.on('message:receive', (message) => {
         const chatStore = useChatStore();
-        chatStore.addMessage(message.chatId, message);
+        console.log("ricevuto");
+        chatStore.addMessage(message);
       });
 
       // Ascolta cambi di stato degli utenti

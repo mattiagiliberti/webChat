@@ -44,7 +44,7 @@ const login = async (req, res) => {
         // Genera token JWT
         const token = jwt.sign({ userId: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "7d" });
         user.password = undefined;
-        res.json({ token, user, userId: user._id });
+        res.json({ token, user, userId: user._id, username: user.username });
     } catch (error) {
         res.status(500).json({ message: "Errore nel server" });
     }

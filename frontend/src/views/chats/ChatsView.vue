@@ -1,63 +1,47 @@
 <template>
   <div>
     <template v-if="activeChat">
-          <v-list class="list-messages">
-            <template v-for="(msgs, date) in groupedMessages" :key="date" >
-              <v-divider></v-divider>
-              <v-list-item class="date-label">
-                <v-chip color="grey-lighten-1">{{ date }}</v-chip>
-              </v-list-item>
+      <v-list class="list-messages">
+        <template v-for="(msgs, date) in groupedMessages" :key="date">
+          <v-divider></v-divider>
+          <v-list-item class="date-label">
+            <v-chip color="grey-lighten-1">{{ date }}</v-chip>
+          </v-list-item>
 
-            <v-list-item
-              v-for="message in msgs"
-              :key="message._id"
-              class="rounded-lg"
-              ref="messageItems"
-              :class="{
-                'message-sent':
-                  message.senderId !== activeChat.otherParticipant.userId,
-                'message-received':
-                  message.senderId === activeChat.otherParticipant.userId,
-              }"
-            >
-              <div>
-                <p :class="{
-                    sent: message.senderId !== activeChat.otherParticipant.userId,
-                  }" >
-                  {{ message.message }}
-                </p>
-                <small class="message-timestamp">
-                  {{ dateMessage.format(message.timestamp, 'fullTime24h') }}
-                </small>
-              </div>
-            </v-list-item>
-          </template>
-
-          </v-list>
-          <v-row style="margin: 0.5rem 0 0 0.1rem; height: 10vh;"
-          class="d-flex flex-row align-center pl-2">
-            <v-container class="message-input">
-              <v-textarea
-                v-model="message"
-                :append-icon="message ? 'mdi-send' : 'mdi-microphone'"
-                clear-icon="mdi-close-circle"
-                placeholder="Messaggio..."
-                type="text"
-                variant="solo"
-                rows="1"
-                max-rows="2"
-                auto-grow
-                class="overflow-y-auto rounded-lg"
-              ></v-textarea>
-            </v-container>
-          </v-row>
+          <v-list-item v-for="message in msgs" :key="message._id" class="rounded-lg" ref="messageItems" :class="{
+            'message-sent':
+              message.senderId !== activeChat.otherParticipant.userId,
+            'message-received':
+              message.senderId === activeChat.otherParticipant.userId,
+          }">
+            <div>
+              <p :class="{
+                sent: message.senderId !== activeChat.otherParticipant.userId,
+              }">
+                {{ message.message }}
+              </p>
+              <small class="message-timestamp">
+                {{ dateMessage.format(message.timestamp, 'fullTime24h') }}
+              </small>
+            </div>
+          </v-list-item>
         </template>
-        <div v-else class="message-home" font="Arial">
-          <div class="bg"></div>
-          <h1>Let's chat!</h1>
-          <div class="flip"></div>
-        </div>
-      </div>
+
+      </v-list>
+      <v-row style="margin: 0.5rem 0 0 0.1rem; height: 10vh;" class="d-flex flex-row align-center pl-2">
+        <v-container class="message-input">
+          <v-textarea v-model="message" :append-icon="message ? 'mdi-send' : 'mdi-microphone'"
+            clear-icon="mdi-close-circle" placeholder="Messaggio..." type="text" variant="solo" rows="1" max-rows="2"
+            auto-grow class="overflow-y-auto rounded-lg" @click:append="sendMessage"></v-textarea>
+        </v-container>
+      </v-row>
+    </template>
+    <div v-else class="message-home" font="Arial">
+      <div class="bg"></div>
+      <h1>Let's chat!</h1>
+      <div class="flip"></div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -74,15 +58,15 @@ export default {
       activeChat: null,
     };
   },
-  setup(){
+  setup() {
     const dateMessage = useDate()
     const chatStore = useChatStore();
-    return { dateMessage, chatStore}
+    return { dateMessage, chatStore }
   },
-  computed:{
-    groupedMessages () {
+  computed: {
+    groupedMessages() {
       const groups = {};
-      this.messages.forEach(msg => {
+      this.chatStore.messagesChat.forEach(msg => {
         const dateKey = new Date(msg.timestamp).toLocaleDateString();
         if (!groups[dateKey]) groups[dateKey] = [];
         groups[dateKey].push(msg);
@@ -98,18 +82,18 @@ export default {
       console.log("Chat salvate:", chats);
     }
     if (this.chatStore.activeChat) {
-      this.laodMessages()
+      this.loadMessages()
     }
-    
+
   },
   watch: {
     async "chatStore.activeChat"() {
-      console.log("activechat: "+this.chatStore.activeChat);
-      
-      this.laodMessages();
+      console.log("activechat: " + this.chatStore.activeChat);
+
+      this.loadMessages();
     }
   },
-  methods:{
+  methods: {
     formatDate,
     scrollToBottom() {
       this.$nextTick(() => {
@@ -119,18 +103,55 @@ export default {
         }
       });
     },
-    async laodMessages(){            
+
+    async loadMessages() {
       this.activeChat = this.chatStore.activeChat;
+      const chatId = this.activeChat._id;
       console.log("Caricamento messaggi per la chat:", this.activeChat);
       this.messages = [];
       try {
-        const response = await api.getAllMessagesByChat(this.activeChat._id);
+        const response = await api.getAllMessagesByChat(chatId);
         this.messages = response.data;
-        this.scrollToBottom(); 
-        console.log("Messaggi caricati:", this.messages);
+        this.chatStore.messagesChat = this.messages;
+        this.scrollToBottom();
+        console.log("Messaggi caricati da API:", this.messages);
       } catch (error) {
-          console.error("Errore nel caricamento dei messaggi:", error);
+        console.error("Errore nel caricamento dei messaggi:", error);
       }
+    },
+
+    sendMessage() {
+      if (this.message.trim() === "") return;
+
+      const senderId = localStorage.getItem("userId");
+      const receiverId = this.activeChat.otherParticipant.userId;
+      const chatId = this.activeChat._id;
+      const message = this.message;
+      const senderUser = localStorage.getItem("username");
+      const timestamp = new Date().toISOString();
+
+      this.chatStore.sendMessage(receiverId, chatId, message, senderUser);
+
+      this.message = "";
+      this.scrollToBottom();
+
+      // const storedChats = JSON.parse(localStorage.getItem("chats") || "[]");
+      this.chatStore.fetchChats(localStorage.getItem("userId"));
+      // const updatedChats = storedChats.map(chat => {
+      //   if (chat._id === chatId) {
+      //     return {
+      //       ...chat,
+      //       lastMessage: {
+      //         senderId,
+      //         senderUser,
+      //         text: message,
+      //         timestamp,
+      //       },
+      //     };
+      //   }
+      //   return chat;
+      // });
+      // localStorage.setItem("chats", JSON.stringify(updatedChats));
     }
   },
 };
@@ -208,41 +229,42 @@ export default {
   left: -100px;
   border-radius: 30%;
   top: -90px;
-  box-shadow: 
-    400px 100px 0 0 rgba(255, 255, 255,.15),
-    50px 150px 0 0 rgba(255, 255, 255,.15),
-    450px 180px 0 0 rgba(255, 255, 255,.15),
-    10px 50px 0 0 rgba(255, 255, 255,.15),
-    300px 10px 0 0 rgba(255, 255, 255,.15),
-    200px 220px 0 0 rgba(255, 255, 255,.15);
+  box-shadow:
+    400px 100px 0 0 rgba(255, 255, 255, .15),
+    50px 150px 0 0 rgba(255, 255, 255, .15),
+    450px 180px 0 0 rgba(255, 255, 255, .15),
+    10px 50px 0 0 rgba(255, 255, 255, .15),
+    300px 10px 0 0 rgba(255, 255, 255, .15),
+    200px 220px 0 0 rgba(255, 255, 255, .15);
   animation: bgAnim 3s infinite alternate;
 }
 
 @keyframes bgAnim {
   from {
-    box-shadow: 
-    400px 100px 0 0 rgba(255, 255, 255,.15),
-    50px 150px 0 0 rgba(255, 255, 255,.15),
-    450px 180px 0 0 rgba(255, 255, 255,.15),
-    10px 50px 0 0 rgba(255, 255, 255,.15),
-    300px 10px 0 0 rgba(255, 255, 255,.15),
-    200px 220px 0 0 rgba(255, 255, 255,.15);
+    box-shadow:
+      400px 100px 0 0 rgba(255, 255, 255, .15),
+      50px 150px 0 0 rgba(255, 255, 255, .15),
+      450px 180px 0 0 rgba(255, 255, 255, .15),
+      10px 50px 0 0 rgba(255, 255, 255, .15),
+      300px 10px 0 0 rgba(255, 255, 255, .15),
+      200px 220px 0 0 rgba(255, 255, 255, .15);
   }
+
   to {
-    box-shadow: 
-    450px 100px 0 0 rgba(255, 255, 255,.15),
-    0px 150px 0 0 rgba(255, 255, 255,.15),
-    500px 180px 0 0 rgba(255, 255, 255,.15),
-    60px 50px 0 0 rgba(255, 255, 255,.15),
-    250px 10px 0 0 rgba(255, 255, 255,.15),
-    150px 220px 0 0 rgba(255, 255, 255,.15);
+    box-shadow:
+      450px 100px 0 0 rgba(255, 255, 255, .15),
+      0px 150px 0 0 rgba(255, 255, 255, .15),
+      500px 180px 0 0 rgba(255, 255, 255, .15),
+      60px 50px 0 0 rgba(255, 255, 255, .15),
+      250px 10px 0 0 rgba(255, 255, 255, .15),
+      150px 220px 0 0 rgba(255, 255, 255, .15);
   }
 }
 </style>
 
 <style>
-  .v-input__append{
-    padding: 0.6rem !important;
-    margin: 0 !important;
-  }
+.v-input__append {
+  padding: 0.6rem !important;
+  margin: 0 !important;
+}
 </style>
