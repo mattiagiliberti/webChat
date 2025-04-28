@@ -30,9 +30,9 @@
       </v-list>
       <v-row style="margin: 0.5rem 0 0 0.1rem; height: 10vh;" class="d-flex flex-row align-center pl-2">
         <v-container class="message-input">
-          <v-textarea v-model="message" :append-icon="message ? 'mdi-send' : 'mdi-microphone'"
+          <v-textarea v-model="message" append-icon="mdi-send"
             clear-icon="mdi-close-circle" placeholder="Messaggio..." type="text" variant="solo" rows="1" max-rows="2"
-            auto-grow class="overflow-y-auto rounded-lg" @click:append="sendMessage"></v-textarea>
+            auto-grow class="overflow-y-auto rounded-lg" @click:append="sendMessage" @keydown.enter.prevent v-on:keyup.enter="sendMessage"></v-textarea>
         </v-container>
       </v-row>
     </template>
@@ -46,7 +46,6 @@
 
 <script>
 import api from "@/services/api";
-import { formatDate } from "@/utils/date";
 import { useDate } from "vuetify/lib/framework.mjs";
 import { useChatStore } from "@/stores/chatStore";
 export default {
@@ -91,10 +90,14 @@ export default {
       console.log("activechat: " + this.chatStore.activeChat);
 
       this.loadMessages();
-    }
+    },
+    "chatStore.messagesChat"(newMessages, oldMessages) {      
+      if (newMessages.length !== oldMessages.length) {
+        this.scrollToBottom();
+      }
+    },
   },
   methods: {
-    formatDate,
     scrollToBottom() {
       this.$nextTick(() => {
         const items = this.$refs.messageItems;
@@ -105,6 +108,7 @@ export default {
     },
 
     async loadMessages() {
+      this.chatStore.messagesChat = [];
       this.activeChat = this.chatStore.activeChat;
       const chatId = this.activeChat._id;
       console.log("Caricamento messaggi per la chat:", this.activeChat);
@@ -128,30 +132,16 @@ export default {
       const chatId = this.activeChat._id;
       const message = this.message;
       const senderUser = localStorage.getItem("username");
-      const timestamp = new Date().toISOString();
 
       this.chatStore.sendMessage(receiverId, chatId, message, senderUser);
 
       this.message = "";
-      this.scrollToBottom();
-
-      // const storedChats = JSON.parse(localStorage.getItem("chats") || "[]");
-      this.chatStore.fetchChats(localStorage.getItem("userId"));
-      // const updatedChats = storedChats.map(chat => {
-      //   if (chat._id === chatId) {
-      //     return {
-      //       ...chat,
-      //       lastMessage: {
-      //         senderId,
-      //         senderUser,
-      //         text: message,
-      //         timestamp,
-      //       },
-      //     };
-      //   }
-      //   return chat;
-      // });
-      // localStorage.setItem("chats", JSON.stringify(updatedChats));
+      setTimeout(() => {
+        this.scrollToBottom();
+      }, 150);
+      setTimeout(() => {
+        this.chatStore.fetchChats(senderId);
+      }, 200);
     }
   },
 };

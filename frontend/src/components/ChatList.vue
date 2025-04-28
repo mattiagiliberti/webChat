@@ -56,15 +56,14 @@ export default {
   setup() {
     const router = useRouter();
     const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
-
+    const chatStore = useChatStore();
     const userId = localStorage.getItem("userId");
 
-    return { serverUrl, userId };
+    return { serverUrl, userId, chatStore };
   },
   computed: {
     loadChats() {
-      const chatStore = useChatStore();
-      return chatStore.chats;
+      return this.chatStore.chats;
     },
   },
   mounted() {

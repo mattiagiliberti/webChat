@@ -13,7 +13,7 @@ export const useChatStore = defineStore('chat', {
     async fetchChats(userId){
       const response = await api.getChatById(userId);
         if (response.status === 200) {
-          this.chats = response.data;
+          this.chats = [...response.data];
           const userStore = useUsersStore();
           this.chats.forEach(chat => {
             userStore.setUsers(chat.otherParticipant);
@@ -22,10 +22,12 @@ export const useChatStore = defineStore('chat', {
           localStorage.setItem("chats", JSON.stringify(this.chats));  
         }
     },
-    addMessage(message) {
-      this.messagesChat.push(message);
+    addMessage(newMessage) {
+      if (this.activeChat && (this.activeChat._id === newMessage.chatId)) {
+        this.messagesChat = [...this.messagesChat, newMessage];
+      }
+      this.fetchChats(newMessage.receiverId);
     },
-
     async startNewChat(chat, from, to) {
         try {
           const response = await api.createChat(chat);
@@ -66,7 +68,6 @@ export const useChatStore = defineStore('chat', {
               senderUser,
             };
             this.messagesChat.push(localMessage);
-            console.log("Messaggio inviato con successo");
           } else {
             console.error("Errore nell'invio del messaggio", response);
           }

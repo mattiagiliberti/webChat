@@ -19,6 +19,8 @@ export default createVuetify({
         it: 'it-IT',
       },
     },
-    locale: 'it'
+    locale: 'it',
+    fallback: 'it',
+    messages:{ it, it}
   },
 });
