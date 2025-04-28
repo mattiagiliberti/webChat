@@ -1,6 +1,9 @@
 <template>
   <div>
     <template v-if="activeChat">
+      <div v-if="isTyping" class="typing-indicator">
+        Sta scrivendo...
+      </div>
       <v-list class="list-messages">
         <template v-for="(msgs, date) in groupedMessages" :key="date">
           <v-divider></v-divider>
@@ -32,7 +35,8 @@
         <v-container class="message-input">
           <v-textarea v-model="message" append-icon="mdi-send"
             clear-icon="mdi-close-circle" placeholder="Messaggio..." type="text" variant="solo" rows="1" max-rows="2"
-            auto-grow class="overflow-y-auto rounded-lg" @click:append="sendMessage" @keydown.enter.prevent v-on:keyup.enter="sendMessage"></v-textarea>
+            auto-grow class="overflow-y-auto rounded-lg" @click:append="sendMessage" @keydown.enter.prevent v-on:keyup.enter="sendMessage"
+            @input="handleTyping"></v-textarea>
         </v-container>
       </v-row>
     </template>
@@ -48,6 +52,7 @@
 import api from "@/services/api";
 import { useDate } from "vuetify/lib/framework.mjs";
 import { useChatStore } from "@/stores/chatStore";
+import { useSocketStore } from "@/stores/socketStore";
 export default {
   name: "ChatsView",
   data() {
@@ -55,12 +60,14 @@ export default {
       messages: [],
       message: "",
       activeChat: null,
+      isTyping: false,
     };
   },
   setup() {
     const dateMessage = useDate()
     const chatStore = useChatStore();
-    return { dateMessage, chatStore }
+    const socketStore = useSocketStore();
+    return { dateMessage, chatStore, socketStore }
   },
   computed: {
     groupedMessages() {
@@ -78,17 +85,24 @@ export default {
     const userString = localStorage.getItem("chats");
     if (userString) {
       const chats = JSON.parse(userString);
-      console.log("Chat salvate:", chats);
     }
     if (this.chatStore.activeChat) {
       this.loadMessages()
     }
 
+    this.socketStore.socket.on('typing', (userTyping) => {
+        if (userTyping.senderId !== this.activeChat.otherParticipant.userId) return;
+      
+        this.isTyping = true; 
+      });
+
+      this.socketStore.socket.on('stop_typing', (userTyping) => {
+        if (userTyping.senderId !== this.activeChat.otherParticipant.userId) return;
+        this.isTyping = false; 
+      });
   },
   watch: {
     async "chatStore.activeChat"() {
-      console.log("activechat: " + this.chatStore.activeChat);
-
       this.loadMessages();
     },
     "chatStore.messagesChat"(newMessages, oldMessages) {      
@@ -118,10 +132,12 @@ export default {
         this.messages = response.data;
         this.chatStore.messagesChat = this.messages;
         this.scrollToBottom();
-        console.log("Messaggi caricati da API:", this.messages);
       } catch (error) {
         console.error("Errore nel caricamento dei messaggi:", error);
       }
+    },
+    handleTyping() {
+      this.socketStore.emitTyping(this.activeChat.otherParticipant.userId);
     },
 
     sendMessage() {
@@ -170,6 +186,7 @@ export default {
   padding: 10px;
   border-radius: 10px;
   max-width: 60%;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .message-received {
@@ -178,11 +195,20 @@ export default {
   padding: 10px;
   max-width: 60%;
   text-align: left;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .message-input {
   width: 100%;
   padding: 0;
+}
+
+.typing-indicator {
+  align-items: center;
+  font-style: italic;
+  color: gray;
+  z-index: 999;
+  position: absolute;
 }
 
 .message-home {
@@ -248,6 +274,17 @@ export default {
       60px 50px 0 0 rgba(255, 255, 255, .15),
       250px 10px 0 0 rgba(255, 255, 255, .15),
       150px 220px 0 0 rgba(255, 255, 255, .15);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 </style>

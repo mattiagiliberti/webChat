@@ -78,6 +78,22 @@ module.exports = (server) => {
       }
     );
 
+    // Evento "Sta Scrivendo.."
+    socket.on("user:typing", ({ receiverId }) => {
+      const receiverSocketId = connectedUsers.get(receiverId);      
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("typing", { senderId: socket.data.userId });
+      }
+    });
+    
+    // Evento ha smesso di scrivere
+    socket.on("user:stop_typing", ({ receiverId }) => {
+      const receiverSocketId = connectedUsers.get(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("stop_typing", { senderId: socket.data.userId });
+      }
+    });
+
     // Aggiornamento nuova chat
     socket.on("chat:new", ({ from, to }) => {
       console.log(`Nuova chat tra ${from} e ${to}`);

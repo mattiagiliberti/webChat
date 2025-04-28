@@ -7,7 +7,8 @@ const serverUrl = import.meta.env.VITE_SERVER_HOSTNAME;
 export const useSocketStore = defineStore('socket', {
   state: () => ({
     socket: null,
-    connected: false
+    connected: false,
+    typingTimeout: null,
   }),
 
   actions: {
@@ -33,7 +34,6 @@ export const useSocketStore = defineStore('socket', {
       // Ascolta nuovi messaggi e aggiornali nello store della chat
       this.socket.on('message:receive', (message) => {
         const chatStore = useChatStore();
-        console.log("ricevuto");
         chatStore.addMessage(message);
       });
 
@@ -58,10 +58,31 @@ export const useSocketStore = defineStore('socket', {
       });
     },
 
+    emitTyping(receiverId) {
+      if (this.socket) {
+        this.socket.emit('user:typing', { receiverId });
+        
+        if (this.typingTimeout) {
+          clearTimeout(this.typingTimeout);
+        }
+
+        this.typingTimeout = setTimeout(() => {
+          this.emitStopTyping(receiverId);
+        }, 2000); 
+      }
+    },
+
+    emitStopTyping(receiverId) {
+      if (this.socket) {
+        this.socket.emit('user:stop_typing', { receiverId });
+      }
+    },
+
     disconnectSocket() {
       if (this.socket) {
         this.socket.disconnect();
         this.socket = null;
+        this.typingTimeout = null;
         this.connected = false;
       }
     },
