@@ -1,9 +1,6 @@
 <template>
   <div>
     <template v-if="activeChat">
-      <div v-if="isTyping" class="typing-indicator">
-        Sta scrivendo...
-      </div>
       <v-list class="list-messages">
         <template v-for="(msgs, date) in groupedMessages" :key="date">
           <v-divider></v-divider>
@@ -30,12 +27,15 @@
           </v-list-item>
         </template>
 
+        <div v-if="isTyping" class="typing-indicator">
+          Sta scrivendo<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+        </div>
       </v-list>
       <v-row style="margin: 0.5rem 0 0 0.1rem; height: 10vh;" class="d-flex flex-row align-center pl-2">
         <v-container class="message-input">
-          <v-textarea v-model="message" append-icon="mdi-send"
-            clear-icon="mdi-close-circle" placeholder="Messaggio..." type="text" variant="solo" rows="1" max-rows="2"
-            auto-grow class="overflow-y-auto rounded-lg" @click:append="sendMessage" @keydown.enter.prevent v-on:keyup.enter="sendMessage"
+          <v-textarea v-model="message" append-icon="mdi-send" clear-icon="mdi-close-circle" placeholder="Messaggio..."
+            type="text" variant="solo" rows="1" max-rows="2" auto-grow class="overflow-y-auto rounded-lg"
+            @click:append="sendMessage" @keydown.enter.prevent v-on:keyup.enter="sendMessage"
             @input="handleTyping"></v-textarea>
         </v-container>
       </v-row>
@@ -91,25 +91,30 @@ export default {
     }
 
     this.socketStore.socket.on('typing', (userTyping) => {
-        if (userTyping.senderId !== this.activeChat.otherParticipant.userId) return;
-      
-        this.isTyping = true; 
-      });
+      if (userTyping.senderId !== this.activeChat.otherParticipant.userId) return;
 
-      this.socketStore.socket.on('stop_typing', (userTyping) => {
-        if (userTyping.senderId !== this.activeChat.otherParticipant.userId) return;
-        this.isTyping = false; 
-      });
+      this.isTyping = true;
+    });
+
+    this.socketStore.socket.on('stop_typing', (userTyping) => {
+      if (userTyping.senderId !== this.activeChat.otherParticipant.userId) return;
+      this.isTyping = false;
+    });
   },
   watch: {
     async "chatStore.activeChat"() {
       this.loadMessages();
     },
-    "chatStore.messagesChat"(newMessages, oldMessages) {      
+    "chatStore.messagesChat"(newMessages, oldMessages) {
       if (newMessages.length !== oldMessages.length) {
         this.scrollToBottom();
       }
     },
+    isTyping(newVal) {
+    if (newVal) {
+      this.scrollToBottom();
+    }
+  }
   },
   methods: {
     scrollToBottom() {
@@ -204,11 +209,29 @@ export default {
 }
 
 .typing-indicator {
-  align-items: center;
+  align-self: flex-start;
+  background-color: #424242;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 20px;
+  max-width: fit-content;
   font-style: italic;
-  color: gray;
-  z-index: 999;
-  position: absolute;
+  animation: fadeIn 0.4s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.typing-indicator .dot {
+  animation: blink 1.5s infinite;
+}
+
+.typing-indicator .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+  animation-delay: 0.4s;
 }
 
 .message-home {
@@ -277,14 +300,17 @@ export default {
   }
 }
 
-@keyframes fadeIn {
+@keyframes blink {
   0% {
     opacity: 0;
-    transform: translateY(10px);
   }
-  100% {
+
+  20% {
     opacity: 1;
-    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
   }
 }
 </style>

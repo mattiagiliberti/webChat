@@ -26,7 +26,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h2>Modifica Info</h2>
+        <h2 class="mb-4">Modifica Info</h2>
         <v-text-field
           :disabled="true"
           v-model="user.username"
@@ -57,7 +57,7 @@
     </v-row>
     <v-row>
       <v-col cols="12">
-        <h2>Cambia Password</h2>
+        <h2 class="mb-4">Cambia Password</h2>
         <v-text-field
           v-model="passwordData.oldPassword"
           color="deep-purple-lighten-2"
