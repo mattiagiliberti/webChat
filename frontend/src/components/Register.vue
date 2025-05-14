@@ -69,8 +69,8 @@ export default {
       pattern : /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       nameRules: [
         (v) =>
-          (v && v.length <= 10 && v.length >= 3) ||
-          "Username deve essere compreso tra 3 e 10 caratteri",
+          (v && v.length <= 12 && v.length >= 3) ||
+          "Username deve essere compreso tra 3 e 12 caratteri",
       ],
       passwordRules: [
         (v) =>
@@ -97,11 +97,11 @@ export default {
         })
         .then((response) => {
           if (response.status === 201) {
-            this.text(response.data.message);
+            this.text = response.data.message;
             this.snackbar = true;
             this.$router.push("/");
           } else {
-            this.text(response.data.message);
+            this.text = response.data.message;
             this.snackbar = true;
           }
         })

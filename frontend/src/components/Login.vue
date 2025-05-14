@@ -37,11 +37,11 @@ export default {
       password: "",
       nameRules: [
         (v) =>
-          (v && v.length <= 10 && v.length >= 3) ||
-          "Username deve essere compreso tra 3 e 10 caratteri",
+          (v && v.length <= 12 && v.length >= 3) ||
+          "Username deve essere compreso tra 3 e 12 caratteri",
       ],
       passwordRules: [
-        (v) => v.length >= 3 || "Password deve essere avere almeno 8 caratteri",
+        (v) => v.length >= 8 || "Password deve essere avere almeno 8 caratteri",
       ],
       snackbar: false,
       text: "",
